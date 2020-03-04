@@ -1,0 +1,7 @@
+[package]
+name = "RustGLFW"
+version = "0.1.0"
+authors = ["David Atkins <gamecake1@gmail.com>"]
+edition = "2018"
+
+[dependencies]
