@@ -7,5 +7,5 @@ fn main() {
         width: 800
     };
 
-    window.start();
+    window.show();
 }
