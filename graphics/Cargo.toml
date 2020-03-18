@@ -1,8 +1,11 @@
 [package]
-name = "rust_glfw"
+name = "graphics"
 version = "0.1.0"
 authors = ["David Atkins <gamecake1@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-graphics = { path = "graphics" }
+gl = "0.10.0"
+
+[dependencies.glfw]
+git = "https://github.com/bjz/glfw-rs.git"
