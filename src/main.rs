@@ -2,10 +2,13 @@
 use graphics::Window;
 
 fn main() {
-    let window = Window {
-        height: 600,
-        width: 800
-    };
+    let mut window = Window::new(800, 600);
 
-    window.show();
+    while !window.was_close_requested {
+        window.process_events();
+
+        window.update_graphics();
+    }
+
+    window.close();
 }
