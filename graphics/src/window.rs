@@ -59,4 +59,11 @@ impl Window {
         self.glfw_window.swap_buffers();
         self.glfw.poll_events();
     }
+
+    pub fn clear(&self) {
+        unsafe {
+            gl::Clear(gl::COLOR_BUFFER_BIT);
+            gl::ClearColor(0.2, 0.3, 0.3, 1.0);
+        }
+    }
 }
