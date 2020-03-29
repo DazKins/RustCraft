@@ -55,7 +55,7 @@ impl Window {
         self.glfw_window.set_should_close(true)
     }
 
-    pub fn update_graphics(&mut self) {
+    pub fn update(&mut self) {
         self.glfw_window.swap_buffers();
         self.glfw.poll_events();
     }

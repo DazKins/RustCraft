@@ -7,7 +7,7 @@ fn main() {
     while !window.was_close_requested {
         window.process_events();
 
-        window.update_graphics();
+        window.update();
     }
 
     window.close();
