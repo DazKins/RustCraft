@@ -6,20 +6,11 @@ use std::ptr;
 
 pub struct Model {
     vao_id: GLuint,
+    index_count: i32
 }
 
-const vertices: [f32; 9] = [
-    0.5,  0.5, 0.0, 
-    0.5, -0.5, 0.0,
-   -0.5,  0.5, 0.0
-];
-
-const indices: [i32; 3] = [ // note that we start from 0!
-    0, 1, 2,  // first Triangle
-];
-
 impl Model {
-    pub fn new() -> Model {
+    pub fn new(vertices: &[f32], indices: &[i32]) -> Model {
         let vao_id = unsafe {
             let (mut vao_id, mut vbo_id, mut ebo_id) = (0, 0, 0);
     
@@ -52,14 +43,15 @@ impl Model {
         };
     
         return Model {
-            vao_id
+            vao_id,
+            index_count: indices.len() as i32
         };
     }
 
     pub fn render(&self) {
         unsafe {
             gl::BindVertexArray(self.vao_id);
-            gl::DrawElements(gl::TRIANGLES, 3, gl::UNSIGNED_INT, ptr::null());
+            gl::DrawElements(gl::TRIANGLES, self.index_count as i32, gl::UNSIGNED_INT, ptr::null());
         }
     }
 }
