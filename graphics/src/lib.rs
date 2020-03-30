@@ -5,3 +5,7 @@ pub use self::window::Window;
 pub mod model;
 
 pub use self::model::Model;
+
+pub mod shader;
+
+pub use self::shader::Shader;
