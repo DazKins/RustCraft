@@ -3,16 +3,18 @@ use gl::types::*;
 use std::ffi::CString;
 use std::ptr;
 use std::str;
+use std::fs::File;
+use std::io::Read;
 
 pub struct Shader {
     program_id: GLuint
 }
 
 impl Shader {
-    pub fn new(vertex_shader_source: &str, fragment_shader_source: &str) -> Shader {
+    pub fn new(vertex_shader_path: &str, fragment_shader_path: &str) -> Shader {
         let program_id = unsafe {
             let vertex_shader_id = gl::CreateShader(gl::VERTEX_SHADER);
-            let c_str_vert = CString::new(vertex_shader_source.as_bytes()).unwrap();
+            let c_str_vert = CString::new(load_string_from_file(vertex_shader_path).as_bytes()).unwrap();
             gl::ShaderSource(vertex_shader_id, 1, &c_str_vert.as_ptr(), ptr::null());
             gl::CompileShader(vertex_shader_id);
 
@@ -26,7 +28,7 @@ impl Shader {
             }
 
             let fragment_shader_id = gl::CreateShader(gl::FRAGMENT_SHADER);
-            let c_str_frag = CString::new(fragment_shader_source.as_bytes()).unwrap();
+            let c_str_frag = CString::new(load_string_from_file(fragment_shader_path).as_bytes()).unwrap();
             gl::ShaderSource(fragment_shader_id, 1, &c_str_frag.as_ptr(), ptr::null());
             gl::CompileShader(fragment_shader_id);
 
@@ -63,4 +65,12 @@ impl Shader {
             gl::UseProgram(self.program_id);
         }
     }
+}
+
+pub fn load_string_from_file(path: &str) -> String {
+    let mut file = File::open(path)
+        .unwrap_or_else(|_| panic!("Failed to open file: {}", path));
+    let mut string = String::new();
+    file.read_to_string(&mut string).expect("Failed to read file");
+    string
 }
