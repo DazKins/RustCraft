@@ -1,5 +1,5 @@
 [package]
-name = "graphics"
+name = "engine"
 version = "0.1.0"
 authors = ["David Atkins <gamecake1@gmail.com>"]
 edition = "2018"

@@ -1,7 +1,7 @@
-use graphics::game_state::GameState;
+use engine::game_state::GameState;
 
-use graphics::shader::Shader;
-use graphics::model::Model;
+use engine::shader::Shader;
+use engine::model::Model;
 
 const VERTICES: [f32; 12] = [
     0.5,  0.5, 0.0, 

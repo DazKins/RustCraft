@@ -24,6 +24,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "engine"
+version = "0.1.0"
+dependencies = [
+ "gl 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "glfw 0.37.0 (git+https://github.com/bjz/glfw-rs.git)",
+]
+
+[[package]]
 name = "gl"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -62,14 +70,6 @@ version = "3.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cmake 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "graphics"
-version = "0.1.0"
-dependencies = [
- "gl 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "glfw 0.37.0 (git+https://github.com/bjz/glfw-rs.git)",
 ]
 
 [[package]]
@@ -118,7 +118,7 @@ dependencies = [
 name = "rust_glfw"
 version = "0.1.0"
 dependencies = [
- "graphics 0.1.0",
+ "engine 0.1.0",
 ]
 
 [[package]]
