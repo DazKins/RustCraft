@@ -2,18 +2,8 @@ use engine::game_state::GameState;
 
 use engine::shader::Shader;
 use engine::model::Model;
-
-const VERTICES: [f32; 12] = [
-    0.5,  0.5, 0.0, 
-    0.5, -0.5, 0.0,
-   -0.5,  0.5, 0.0,
-   -0.5,  -0.5, 0.0
-];
-
-const INDICES: [i32; 6] = [
-    0, 1, 2,
-    3, 2, 1
-];
+use engine::model::ModelBuilder;
+use cgmath::Vector3;
 
 pub struct GameStatePlaying {
     model: Model,
@@ -22,8 +12,24 @@ pub struct GameStatePlaying {
 
 impl GameStatePlaying {
     pub fn new() -> GameStatePlaying {
+        let mut model_builder = ModelBuilder::new();
+
+        model_builder.push_vertex(Vector3::new(0.5, 0.5, 0.0));
+        model_builder.push_vertex(Vector3::new(0.5, -0.5, 0.0));
+        model_builder.push_vertex(Vector3::new(-0.5, 0.5, 0.0));
+        model_builder.push_vertex(Vector3::new(-0.5, -0.5, 0.0));
+
+        model_builder.push_index(0);
+        model_builder.push_index(1);
+        model_builder.push_index(2);
+        model_builder.push_index(3);
+        model_builder.push_index(2);
+        model_builder.push_index(1);
+
+        let model = model_builder.build();
+
         GameStatePlaying {
-            model: Model::new(&VERTICES, &INDICES),
+            model,
             shader: Shader::new("shaders/vertex_shader.vs", "shaders/fragment_shader.fs")
         }
     }
