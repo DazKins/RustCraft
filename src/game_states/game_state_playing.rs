@@ -3,7 +3,8 @@ use engine::game_state::GameState;
 use engine::shader::Shader;
 use engine::model::Model;
 use engine::model::ModelBuilder;
-use cgmath::Vector3;
+
+use cgmath::{ Matrix4, Vector3 };
 
 pub struct GameStatePlaying {
     model: Model,
@@ -37,7 +38,8 @@ impl GameStatePlaying {
 
 impl GameState for GameStatePlaying {
     fn init(&mut self) {
-        
+        self.shader.bind();
+        self.shader.set_uniform_mat4("transformMatrix", &Matrix4::from_scale(1.0_f32));
     }
 
     fn tick(&mut self) {
@@ -45,7 +47,6 @@ impl GameState for GameStatePlaying {
     }
 
     fn render(&mut self) {
-        self.shader.bind();
         self.model.render();
     }
 }

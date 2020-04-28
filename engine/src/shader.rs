@@ -6,6 +6,8 @@ use std::str;
 use std::fs::File;
 use std::io::Read;
 
+use cgmath::{ Matrix, Matrix4 };
+
 pub struct Shader {
     program_id: GLuint
 }
@@ -63,6 +65,19 @@ impl Shader {
     pub fn bind(&self) {
         unsafe {
             gl::UseProgram(self.program_id);
+        }
+    }
+
+    pub fn unbind() {
+        unsafe {
+            gl::UseProgram(0);
+        }
+    }
+
+    pub fn set_uniform_mat4(&self, location: &str, matrix: &Matrix4<f32>) {
+        unsafe {
+            let location = gl::GetUniformLocation(self.program_id, CString::new(location).unwrap().as_ptr());
+            gl::UniformMatrix4fv(location, 1, gl::FALSE, matrix.as_ptr());
         }
     }
 }
