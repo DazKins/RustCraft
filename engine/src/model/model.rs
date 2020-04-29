@@ -4,6 +4,14 @@ use std::mem;
 use std::os::raw::c_void;
 use std::ptr;
 
+const POSITION_ATTRIBUTE_LOCATION: u32 = 0;
+const TEXTURE_ATTRIBUTE_LOCATION: u32 = 1;
+
+const VERTEX_POSITION_SIZE: u32 = 3;
+const VERTEX_TEXTURE_SIZE: u32 = 2;
+
+const VERTEX_DATA_SIZE: u32 = VERTEX_POSITION_SIZE + VERTEX_TEXTURE_SIZE;
+
 pub struct Model {
     vao_id: GLuint,
     index_count: i32
@@ -31,9 +39,17 @@ impl Model {
                            (indices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
                            &indices[0] as *const i32 as *const c_void,
                            gl::STATIC_DRAW);
-    
-            gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 3 * mem::size_of::<GLfloat>() as GLsizei, ptr::null());
-            gl::EnableVertexAttribArray(0);
+                           
+            let mut offset: usize = 0;
+
+            gl::VertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, VERTEX_POSITION_SIZE as i32, gl::FLOAT, gl::FALSE, 
+                VERTEX_DATA_SIZE as i32 * mem::size_of::<GLfloat>() as GLsizei, (offset as usize * mem::size_of::<GLfloat>()) as *const c_void);
+            gl::EnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+            offset = offset + VERTEX_POSITION_SIZE as usize;
+
+            gl::VertexAttribPointer(TEXTURE_ATTRIBUTE_LOCATION, VERTEX_TEXTURE_SIZE as i32, gl::FLOAT, gl::FALSE, 
+                VERTEX_DATA_SIZE as i32 * mem::size_of::<GLfloat>() as GLsizei,  (offset as usize * mem::size_of::<GLfloat>()) as *const c_void);
+            gl::EnableVertexAttribArray(TEXTURE_ATTRIBUTE_LOCATION);
     
             gl::BindBuffer(gl::ARRAY_BUFFER, 0);
     

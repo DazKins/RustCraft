@@ -15,17 +15,13 @@ impl GameStatePlaying {
     pub fn new() -> GameStatePlaying {
         let mut model_builder = ModelBuilder::new();
 
-        model_builder.push_vertex(Vector3::new(0.5, 0.5, 0.0));
-        model_builder.push_vertex(Vector3::new(0.5, -0.5, 0.0));
-        model_builder.push_vertex(Vector3::new(-0.5, 0.5, 0.0));
-        model_builder.push_vertex(Vector3::new(-0.5, -0.5, 0.0));
-
-        model_builder.push_index(0);
-        model_builder.push_index(1);
-        model_builder.push_index(2);
-        model_builder.push_index(3);
-        model_builder.push_index(2);
-        model_builder.push_index(1);
+        model_builder.set_xyz(Vector3::new(0.5, 0.5, 0.0)).push_vertex();
+        model_builder.set_xyz(Vector3::new(0.5, -0.5, 0.0)).push_vertex();
+        model_builder.set_xyz(Vector3::new(-0.5, 0.5, 0.0)).push_vertex();
+        
+        model_builder.set_xyz(Vector3::new(-0.5, -0.5, 0.0)).push_vertex();
+        model_builder.set_xyz(Vector3::new(-0.5, 0.5, 0.0)).push_vertex();
+        model_builder.set_xyz(Vector3::new(0.5, -0.5, 0.0)).push_vertex();
 
         let model = model_builder.build();
 
