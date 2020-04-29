@@ -13,3 +13,6 @@ pub use self::engine::EngineConfig;
 
 pub mod game_state;
 pub use self::game_state::GameState;
+
+pub mod texture;
+pub use self::texture::Texture;
