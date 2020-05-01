@@ -3,31 +3,54 @@ use engine::game_state::GameState;
 use engine::shader::Shader;
 use engine::model::Model;
 use engine::model::ModelBuilder;
+use engine::texture::Texture;
 
-use cgmath::{ Matrix4, Vector3 };
+use cgmath::{ Matrix4, Vector3, Vector2 };
 
 pub struct GameStatePlaying {
     model: Model,
-    shader: Shader
+    shader: Shader,
+    texture: Texture
 }
 
 impl GameStatePlaying {
     pub fn new() -> GameStatePlaying {
         let mut model_builder = ModelBuilder::new();
 
-        model_builder.set_xyz(Vector3::new(0.5, 0.5, 0.0)).push_vertex();
-        model_builder.set_xyz(Vector3::new(0.5, -0.5, 0.0)).push_vertex();
-        model_builder.set_xyz(Vector3::new(-0.5, 0.5, 0.0)).push_vertex();
+        model_builder
+            .set_xyz(Vector3::new(0.5, 0.5, 0.0))
+            .set_uv(Vector2::new(1.0, 1.0))
+            .push_vertex();
+        model_builder
+            .set_xyz(Vector3::new(0.5, -0.5, 0.0))
+            .set_uv(Vector2::new(1.0, 0.0))
+            .push_vertex();
+        model_builder
+            .set_xyz(Vector3::new(-0.5, 0.5, 0.0))
+            .set_uv(Vector2::new(0.0, 1.0))
+            .push_vertex();
         
-        model_builder.set_xyz(Vector3::new(-0.5, -0.5, 0.0)).push_vertex();
-        model_builder.set_xyz(Vector3::new(-0.5, 0.5, 0.0)).push_vertex();
-        model_builder.set_xyz(Vector3::new(0.5, -0.5, 0.0)).push_vertex();
+        model_builder
+            .set_xyz(Vector3::new(-0.5, -0.5, 0.0))
+            .set_uv(Vector2::new(0.0, 1.0))
+            .push_vertex();
+        model_builder
+            .set_xyz(Vector3::new(-0.5, 0.5, 0.0))
+            .set_uv(Vector2::new(0.0, 0.0))
+            .push_vertex();
+        model_builder
+            .set_xyz(Vector3::new(0.5, -0.5, 0.0))
+            .set_uv(Vector2::new(1.0, 1.0))
+            .push_vertex();
 
         let model = model_builder.build();
 
+        let texture = Texture::new("container.jpg");
+
         GameStatePlaying {
             model,
-            shader: Shader::new("shaders/vertex_shader.vs", "shaders/fragment_shader.fs")
+            shader: Shader::new("shaders/vertex_shader.vs", "shaders/fragment_shader.fs"),
+            texture
         }
     }
 }
@@ -43,6 +66,7 @@ impl GameState for GameStatePlaying {
     }
 
     fn render(&mut self) {
+        self.texture.bind();
         self.model.render();
     }
 }
