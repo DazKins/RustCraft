@@ -1,16 +1,16 @@
 use engine::game_state::GameState;
 
-use engine::shader::Shader;
 use engine::model::Model;
 use engine::model::ModelBuilder;
 use engine::texture::Texture;
+use engine::render_context::RenderContext;
 
-use cgmath::{ Matrix4, Vector3, Vector2 };
+use cgmath::{ Vector3, Vector2 };
 
 pub struct GameStatePlaying {
     model: Model,
-    shader: Shader,
-    texture: Texture
+    texture: Texture,
+    render_context: RenderContext
 }
 
 impl GameStatePlaying {
@@ -46,10 +46,11 @@ impl GameStatePlaying {
         let model = model_builder.build();
 
         let texture = Texture::new("container.jpg");
+        let render_context = RenderContext::new();
 
         GameStatePlaying {
             model,
-            shader: Shader::new("shaders/vertex_shader.vs", "shaders/fragment_shader.fs"),
+            render_context,
             texture
         }
     }
@@ -57,8 +58,7 @@ impl GameStatePlaying {
 
 impl GameState for GameStatePlaying {
     fn init(&mut self) {
-        self.shader.bind();
-        self.shader.set_uniform_mat4("transformMatrix", &Matrix4::from_scale(1.0_f32));
+
     }
 
     fn tick(&mut self) {
@@ -67,6 +67,6 @@ impl GameState for GameStatePlaying {
 
     fn render(&mut self) {
         self.texture.bind();
-        self.model.render();
+        self.render_context.render(&self.model);
     }
 }
