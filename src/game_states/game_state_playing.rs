@@ -5,12 +5,13 @@ use engine::model::ModelBuilder;
 use engine::texture::Texture;
 use engine::render_context::RenderContext;
 
-use cgmath::{ Vector3, Vector2 };
+use cgmath::{ Matrix4, Vector3, Vector2, Rad };
 
 pub struct GameStatePlaying {
     model: Model,
     texture: Texture,
-    render_context: RenderContext
+    render_context: RenderContext,
+    t: f32
 }
 
 impl GameStatePlaying {
@@ -51,7 +52,8 @@ impl GameStatePlaying {
         GameStatePlaying {
             model,
             render_context,
-            texture
+            texture,
+            t: 0.0
         }
     }
 }
@@ -62,11 +64,14 @@ impl GameState for GameStatePlaying {
     }
 
     fn tick(&mut self) {
-
+        self.t = self.t + 0.01
     }
 
     fn render(&mut self) {
         self.texture.bind();
+        self.render_context.get_matrix_stack().push();
+        self.render_context.get_matrix_stack().transform(&Matrix4::from_angle_z(Rad(self.t)));
         self.render_context.render(&self.model);
+        self.render_context.get_matrix_stack().pop();
     }
 }

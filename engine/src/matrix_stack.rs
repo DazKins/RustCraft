@@ -14,16 +14,18 @@ impl MatrixStack {
         }
     }
 
-    pub fn push(&mut self, matrix: Matrix4<f32>) -> &mut MatrixStack {
-        let current_matrix = self.stack.last().unwrap();
-        let new_matrix = current_matrix * matrix;
-        self.stack.push(new_matrix);
-        self
+    pub fn push(&mut self) {
+        self.stack.push(*self.stack.last().unwrap());
     }
 
-    pub fn pop(&mut self) -> &mut MatrixStack {
-        self.stack.pop().unwrap();
-        self
+    pub fn transform(&mut self, matrix: &Matrix4<f32>) {
+        let current_matrix = self.pop();
+        let new_matrix = current_matrix * matrix;
+        self.stack.push(new_matrix);
+    }
+
+    pub fn pop(&mut self) -> Matrix4<f32> {
+        self.stack.pop().unwrap()
     }
 
     pub fn peek(&self) -> &Matrix4<f32> {

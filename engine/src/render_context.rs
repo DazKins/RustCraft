@@ -21,4 +21,8 @@ impl RenderContext {
         self.shader.set_uniform_mat4("transformMatrix", matrix);
         model.render();
     }
+
+    pub fn get_matrix_stack(&mut self) -> &mut MatrixStack {
+        return &mut self.matrix_stack;
+    }
 }
