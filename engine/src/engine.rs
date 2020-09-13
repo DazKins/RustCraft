@@ -28,8 +28,6 @@ impl Engine {
     }
 
     pub fn start(&mut self, game_state: &mut dyn GameState) {
-        game_state.init();
-
         self.run_loop(game_state);
 
         self.window.close();
