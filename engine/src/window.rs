@@ -8,7 +8,7 @@ use crate::input::InputState;
 use crate::input::glfw_key_to_engine_key;
 
 pub struct Window {
-    pub was_close_requested: bool,
+    pub should_close: bool,
     glfw: glfw::Glfw,
     glfw_window: glfw::Window,
     event_receiver: Receiver<(f64, glfw::WindowEvent)>,
@@ -27,12 +27,12 @@ impl Window {
             .expect("Failed to create GLFW window");
     
         glfw_window.make_current();
-        glfw_window.set_key_polling(true);
-        glfw_window.set_framebuffer_size_polling(true);
+        glfw_window.set_all_polling(true);
+    
         gl::load_with(|symbol| glfw_window.get_proc_address(symbol) as *const _);
     
         Window {
-            was_close_requested: false,
+            should_close: false,
             glfw,
             glfw_window,
             event_receiver,
@@ -41,17 +41,17 @@ impl Window {
     }
 
     pub fn process_events (&mut self) {
+        self.glfw.poll_events();
         for (_, event) in glfw::flush_messages(&self.event_receiver) {
             match event {
+                glfw::WindowEvent::Close => self.should_close = true,
                 glfw::WindowEvent::FramebufferSize(width, height) => {
                     unsafe {
                         gl::Viewport(0, 0, width, height);
                     }
                 }
-                glfw::WindowEvent::Key(glfw::Key::Escape, _, Action::Press, _) => self.was_close_requested = true,
                 glfw::WindowEvent::Key(key, _, action, _) => {
                     match action {
-                        
                         Action::Press => self.input_state.borrow_mut().set_pressed(glfw_key_to_engine_key(key)),
                         Action::Release => self.input_state.borrow_mut().set_released(glfw_key_to_engine_key(key)),
                         _ => {}
@@ -68,7 +68,6 @@ impl Window {
 
     pub fn update(&mut self) {
         self.glfw_window.swap_buffers();
-        self.glfw.poll_events();
     }
 
     pub fn clear(&self) {

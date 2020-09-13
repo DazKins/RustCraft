@@ -48,7 +48,7 @@ impl Engine {
 
         let mut last_debug_print_time = Instant::now();
 
-        while !self.window.was_close_requested {
+        while !self.window.should_close {
             self.window.clear();
             self.window.process_events();
 
@@ -79,8 +79,6 @@ impl Engine {
             game_state.render();
 
             frame_tracker = frame_tracker + 1;
-
-            self.window.close();
 
             self.window.update();
         }
