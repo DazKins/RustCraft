@@ -1,9 +1,9 @@
-use engine::game_state::GameState;
+use engine::GameState;
 
 use engine::model::Model;
 use engine::model::ModelBuilder;
-use engine::texture::Texture;
-use engine::render_context::RenderContext;
+use engine::Texture;
+use engine::RenderContext;
 use engine::input::InputState;
 use engine::input::Key;
 

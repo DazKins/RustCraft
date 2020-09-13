@@ -1,5 +1,5 @@
-pub mod model;
+mod model;
 pub use model::Model;
 
-pub mod model_builder;
+mod model_builder;
 pub use model_builder::ModelBuilder;
