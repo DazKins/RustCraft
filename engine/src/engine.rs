@@ -1,6 +1,7 @@
-use crate::window::Window;
+use crate::Window;
 use crate::input::InputState;
 use crate::GameState;
+use crate::RenderContext;
 use std::{time::Instant, cell::RefCell, rc::Rc};
 
 pub struct EngineConfig {
@@ -10,7 +11,8 @@ pub struct EngineConfig {
 
 pub struct Engine {
     window: Window,
-    input_state: Rc<RefCell<InputState>>
+    input_state: Rc<RefCell<InputState>>,
+    render_context: RenderContext,
 }
 
 impl Engine {
@@ -20,12 +22,9 @@ impl Engine {
 
         Engine {
             window: Window::new(config.window_width, config.window_height, Rc::clone(&input_state)),
-            input_state: Rc::clone(&input_state)
+            input_state: Rc::clone(&input_state),
+            render_context: RenderContext::new()
         }
-    }
-
-    pub fn get_input_state(&self) -> Rc<RefCell<InputState>> {
-        Rc::clone(&self.input_state)
     }
 
     pub fn start(&mut self, game_state: &mut dyn GameState) {
@@ -61,7 +60,7 @@ impl Engine {
 
             while delta >= 1.0 {
                 delta -= 1.0;
-                game_state.tick();
+                game_state.tick(&self.input_state.borrow());
                 tick_tracker = tick_tracker + 1;
             }
 
@@ -76,7 +75,7 @@ impl Engine {
                 tick_tracker = 0;
             }
 
-            game_state.render();
+            game_state.render(&mut self.render_context);
 
             frame_tracker = frame_tracker + 1;
 

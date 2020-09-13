@@ -4,24 +4,19 @@ use engine::model::Model;
 use engine::model::ModelBuilder;
 use engine::input::InputState;
 use engine::input::Key;
-use engine::Engine;
 use engine::Texture;
 use engine::RenderContext;
 
 use cgmath::{ Matrix4, Vector3, Vector2, Rad };
 
-use std::{rc::Rc, cell::RefCell};
-
 pub struct GameStatePlaying {
     model: Model,
     texture: Texture,
-    render_context: RenderContext,
-    input_state: Rc<RefCell<InputState>>,
     t: f32
 }
 
 impl GameStatePlaying {
-    pub fn new(engine: &Engine) -> GameStatePlaying {
+    pub fn new() -> GameStatePlaying {
         let mut model_builder = ModelBuilder::new();
 
         model_builder
@@ -52,39 +47,28 @@ impl GameStatePlaying {
 
         let model = model_builder.build();
 
-        let texture = Texture::new("container.jpg");
-        let render_context = RenderContext::new();
-
-        let input_state = engine.get_input_state();
-
         GameStatePlaying {
             model,
-            render_context,
-            texture,
-            input_state,
+            texture: Texture::new("container.jpg"),
             t: 0.0
         }
     }
 }
 
 impl GameState for GameStatePlaying {
-    fn init(&mut self) {
-
-    }
-
-    fn tick(&mut self) {
-        self.t = self.t + 0.01;
-
-        if self.input_state.borrow().is_key_pressed(Key::J) {
-            println!("SUCCESS!!!");
+    fn tick(&mut self, input_state: &InputState) {
+        if input_state.is_key_pressed(Key::A) {
+            self.t = self.t + 0.04;
+        } else if input_state.is_key_pressed(Key::D) {
+            self.t = self.t - 0.04;
         }
     }
 
-    fn render(&mut self) {
+    fn render(&mut self, render_context: &mut RenderContext) {
         self.texture.bind();
-        self.render_context.get_matrix_stack().push();
-        self.render_context.get_matrix_stack().transform(&Matrix4::from_angle_z(Rad(self.t)));
-        self.render_context.render(&self.model);
-        self.render_context.get_matrix_stack().pop();
+        render_context.get_matrix_stack().push();
+        render_context.get_matrix_stack().transform(&Matrix4::from_angle_z(Rad(self.t)));
+        render_context.render(&self.model);
+        render_context.get_matrix_stack().pop();
     }
 }

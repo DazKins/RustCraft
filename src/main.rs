@@ -10,9 +10,6 @@ fn main() {
         window_height: 800,
     };
 
-    let mut engine = Engine::new(engine_config);
-
-    let mut game_state_playing = GameStatePlaying::new(&engine);
-
-    engine.start(&mut game_state_playing);
+    Engine::new(engine_config)
+        .start(&mut GameStatePlaying::new());
 }
