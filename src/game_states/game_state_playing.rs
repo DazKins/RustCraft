@@ -2,10 +2,11 @@ use engine::GameState;
 
 use engine::model::Model;
 use engine::model::ModelBuilder;
-use engine::Texture;
-use engine::RenderContext;
 use engine::input::InputState;
 use engine::input::Key;
+use engine::Engine;
+use engine::Texture;
+use engine::RenderContext;
 
 use cgmath::{ Matrix4, Vector3, Vector2, Rad };
 
@@ -20,7 +21,7 @@ pub struct GameStatePlaying {
 }
 
 impl GameStatePlaying {
-    pub fn new(input_state: Rc<RefCell<InputState>>) -> GameStatePlaying {
+    pub fn new(engine: &Engine) -> GameStatePlaying {
         let mut model_builder = ModelBuilder::new();
 
         model_builder
@@ -53,6 +54,8 @@ impl GameStatePlaying {
 
         let texture = Texture::new("container.jpg");
         let render_context = RenderContext::new();
+
+        let input_state = engine.get_input_state();
 
         GameStatePlaying {
             model,
