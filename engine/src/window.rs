@@ -1,18 +1,22 @@
-use glfw::{ Context, Key, Action };
+use glfw::{ Context, Action };
 
-use std::sync::mpsc::Receiver;
+use std::{sync::mpsc::Receiver, cell::RefCell};
+use std::rc::Rc;
+
+use crate::input::InputState;
+
+use crate::input::glfw_key_to_engine_key;
 
 pub struct Window {
-    pub width: u32,
-    pub height: u32,
     pub was_close_requested: bool,
     glfw: glfw::Glfw,
     glfw_window: glfw::Window,
-    event_receiver: Receiver<(f64, glfw::WindowEvent)>
+    event_receiver: Receiver<(f64, glfw::WindowEvent)>,
+    input_state: Rc<RefCell<InputState>>
 }
 
 impl Window {
-    pub fn new(width: u32, height: u32) -> Window {
+    pub fn new(width: u32, height: u32 , input_state: Rc<RefCell<InputState>>) -> Window {
         let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
         glfw.window_hint(glfw::WindowHint::ContextVersion(3, 3));
         glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
@@ -28,12 +32,11 @@ impl Window {
         gl::load_with(|symbol| glfw_window.get_proc_address(symbol) as *const _);
     
         Window {
-            width,
-            height,
             was_close_requested: false,
             glfw,
             glfw_window,
-            event_receiver
+            event_receiver,
+            input_state
         }
     }
 
@@ -45,7 +48,15 @@ impl Window {
                         gl::Viewport(0, 0, width, height);
                     }
                 }
-                glfw::WindowEvent::Key(Key::Escape, _, Action::Press, _) => self.was_close_requested = true,
+                glfw::WindowEvent::Key(glfw::Key::Escape, _, Action::Press, _) => self.was_close_requested = true,
+                glfw::WindowEvent::Key(key, _, action, _) => {
+                    match action {
+                        
+                        Action::Press => self.input_state.borrow_mut().set_pressed(glfw_key_to_engine_key(key)),
+                        Action::Release => self.input_state.borrow_mut().set_released(glfw_key_to_engine_key(key)),
+                        _ => {}
+                    }
+                }
                 _ => {}
             }
         }

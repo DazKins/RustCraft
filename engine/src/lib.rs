@@ -1,5 +1,5 @@
+pub mod input;
 pub mod model;
-pub use self::model::Model;
 
 pub mod engine;
 pub use self::engine::Engine;

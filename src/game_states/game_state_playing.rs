@@ -4,18 +4,23 @@ use engine::model::Model;
 use engine::model::ModelBuilder;
 use engine::texture::Texture;
 use engine::render_context::RenderContext;
+use engine::input::InputState;
+use engine::input::Key;
 
 use cgmath::{ Matrix4, Vector3, Vector2, Rad };
+
+use std::{rc::Rc, cell::RefCell};
 
 pub struct GameStatePlaying {
     model: Model,
     texture: Texture,
     render_context: RenderContext,
+    input_state: Rc<RefCell<InputState>>,
     t: f32
 }
 
 impl GameStatePlaying {
-    pub fn new() -> GameStatePlaying {
+    pub fn new(input_state: Rc<RefCell<InputState>>) -> GameStatePlaying {
         let mut model_builder = ModelBuilder::new();
 
         model_builder
@@ -53,6 +58,7 @@ impl GameStatePlaying {
             model,
             render_context,
             texture,
+            input_state,
             t: 0.0
         }
     }
@@ -64,7 +70,11 @@ impl GameState for GameStatePlaying {
     }
 
     fn tick(&mut self) {
-        self.t = self.t + 0.01
+        self.t = self.t + 0.01;
+
+        if self.input_state.borrow().is_key_pressed(Key::J) {
+            println!("SUCCESS!!!");
+        }
     }
 
     fn render(&mut self) {

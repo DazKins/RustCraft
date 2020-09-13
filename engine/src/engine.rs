@@ -1,6 +1,9 @@
 use crate::window::Window;
-use crate::game_state::GameState;
-use std::time::{ Instant };
+use crate::input::InputState;
+use crate::GameState;
+use std::{time::{ Instant }, cell::RefCell};
+
+use std::rc::Rc;
 
 pub struct EngineConfig {
     pub window_width: u32,
@@ -12,9 +15,9 @@ pub struct Engine {
 }
 
 impl Engine {
-    pub fn create(config: EngineConfig) -> Engine
+    pub fn new(config: EngineConfig, input_state: Rc<RefCell<InputState>>) -> Engine
     {
-        let window = Window::new(config.window_width, config.window_height);
+        let window = Window::new(config.window_width, config.window_height, input_state);
     
         Engine {
             window
