@@ -1,4 +1,4 @@
-use crate::Window;
+use crate::{Window, Camera};
 use crate::input::InputState;
 use crate::GameState;
 use crate::RenderContext;
@@ -13,6 +13,7 @@ pub struct Engine {
     window: Window,
     input_state: Rc<RefCell<InputState>>,
     render_context: RenderContext,
+    camera: Camera
 }
 
 impl Engine {
@@ -23,7 +24,8 @@ impl Engine {
         Engine {
             window: Window::new(config.window_width, config.window_height, Rc::clone(&input_state)),
             input_state: Rc::clone(&input_state),
-            render_context: RenderContext::new()
+            render_context: RenderContext::new(),
+            camera: Camera::new()
         }
     }
 
@@ -47,7 +49,7 @@ impl Engine {
 
         while !self.window.should_close {
             self.window.clear();
-            self.window.process_events();
+            self.window.tick();
 
             let now = Instant::now();
 
@@ -58,7 +60,7 @@ impl Engine {
 
             while delta >= 1.0 {
                 delta -= 1.0;
-                game_state.tick(&self.input_state.borrow());
+                self.tick(game_state);
                 tick_tracker = tick_tracker + 1;
             }
 
@@ -72,12 +74,25 @@ impl Engine {
                 frame_tracker = 0;
                 tick_tracker = 0;
             }
-
-            game_state.render(&mut self.render_context);
+            
+            self.render(game_state);
 
             frame_tracker = frame_tracker + 1;
 
             self.window.update();
         }
+    }
+
+    fn tick(&mut self, game_state: &mut dyn GameState) {
+        self.window.lock_mouse();
+        self.camera.tick(&self.input_state.borrow());
+        game_state.tick(&self.input_state.borrow());
+    }
+
+    fn render(&mut self, game_state: &mut dyn GameState) {
+        self.render_context.get_matrix_stack().push();
+        self.render_context.get_matrix_stack().transform(&self.camera.get_transform_matrix());
+        game_state.render(&mut self.render_context);
+        self.render_context.get_matrix_stack().pop();
     }
 }

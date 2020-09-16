@@ -1,6 +1,9 @@
 pub mod input;
 pub mod model;
 
+mod camera;
+pub use self::camera::Camera;
+
 mod engine;
 pub use self::engine::Engine;
 pub use self::engine::EngineConfig;

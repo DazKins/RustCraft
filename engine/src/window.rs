@@ -1,4 +1,5 @@
-use glfw::{ Context, Action };
+use cgmath::Vector2;
+use glfw::{ Context, Action , CursorMode};
 
 use std::{sync::mpsc::Receiver, cell::RefCell};
 use std::rc::Rc;
@@ -9,10 +10,13 @@ use crate::input::glfw_key_to_engine_key;
 
 pub struct Window {
     pub should_close: bool,
+    width: u32,
+    height: u32,
     glfw: glfw::Glfw,
     glfw_window: glfw::Window,
     event_receiver: Receiver<(f64, glfw::WindowEvent)>,
-    input_state: Rc<RefCell<InputState>>
+    input_state: Rc<RefCell<InputState>>,
+    mouse_locked: bool
 }
 
 impl Window {
@@ -33,22 +37,28 @@ impl Window {
     
         Window {
             should_close: false,
+            width,
+            height,
             glfw,
             glfw_window,
             event_receiver,
-            input_state
+            input_state,
+            mouse_locked: false
         }
     }
 
-    pub fn process_events (&mut self) {
+    pub fn tick (&mut self) {
         self.glfw.poll_events();
         for (_, event) in glfw::flush_messages(&self.event_receiver) {
             match event {
-                glfw::WindowEvent::Close => self.should_close = true,
+                glfw::WindowEvent::Close | glfw::WindowEvent::Key(glfw::Key::Escape, _, Action::Press, _) => self.should_close = true,
                 glfw::WindowEvent::FramebufferSize(width, height) => {
                     unsafe {
                         gl::Viewport(0, 0, width, height);
                     }
+                }
+                glfw::WindowEvent::CursorPos(x, y) => {
+                    self.input_state.borrow_mut().set_mouse_position(&Vector2::new(x as f32, y as f32))
                 }
                 glfw::WindowEvent::Key(key, _, action, _) => {
                     match action {
@@ -60,6 +70,23 @@ impl Window {
                 _ => {}
             }
         }
+
+        if self.mouse_locked {
+            let centre = self.get_centre();
+            let mouse_position = self.input_state.borrow().get_mouse_position();
+            self.input_state.borrow_mut().set_mouse_speed(&(mouse_position - centre));
+            self.set_cursor_pos(&self.get_centre())
+        }
+    }
+
+    pub fn lock_mouse(&mut self) {
+        self.mouse_locked = true;
+        self.glfw_window.set_cursor_mode(CursorMode::Hidden);
+    }
+
+    pub fn unlock_mouse(&mut self) {
+        self.mouse_locked = false;
+        self.glfw_window.set_cursor_mode(CursorMode::Normal);
     }
 
     pub fn close(&mut self) {
@@ -70,6 +97,14 @@ impl Window {
         self.glfw_window.swap_buffers();
     }
 
+    pub fn set_cursor_pos(&mut self, position: &Vector2<f32>) {
+        self.glfw_window.set_cursor_pos(position.x as f64, position.y as f64)
+    }
+
+    pub fn get_centre(&self) -> Vector2<f32> {
+        return Vector2::new((self.width / 2) as f32, (self.height / 2) as f32)
+    }
+ 
     pub fn clear(&self) {
         unsafe {
             gl::Clear(gl::COLOR_BUFFER_BIT);
