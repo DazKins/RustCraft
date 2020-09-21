@@ -45,7 +45,7 @@ impl Model {
             gl::VertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, VERTEX_POSITION_SIZE as i32, gl::FLOAT, gl::FALSE, 
                 VERTEX_DATA_SIZE as i32 * mem::size_of::<GLfloat>() as GLsizei, (offset as usize * mem::size_of::<GLfloat>()) as *const c_void);
             gl::EnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-            offset = offset + VERTEX_POSITION_SIZE as usize;
+            offset += VERTEX_POSITION_SIZE as usize;
 
             gl::VertexAttribPointer(TEXTURE_ATTRIBUTE_LOCATION, VERTEX_TEXTURE_SIZE as i32, gl::FLOAT, gl::FALSE, 
                 VERTEX_DATA_SIZE as i32 * mem::size_of::<GLfloat>() as GLsizei,  (offset as usize * mem::size_of::<GLfloat>()) as *const c_void);

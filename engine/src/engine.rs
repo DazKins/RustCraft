@@ -25,7 +25,7 @@ impl Engine {
             window: Window::new(config.window_width, config.window_height, Rc::clone(&input_state)),
             input_state: Rc::clone(&input_state),
             render_context: RenderContext::new(),
-            camera: Camera::new()
+            camera: Camera::new(90.0, 1.0, 0.01, 1000.0)
         }
     }
 
@@ -49,23 +49,23 @@ impl Engine {
 
         while !self.window.should_close {
             self.window.clear();
-            self.window.tick();
 
             let now = Instant::now();
 
             let elapsed_time = now.checked_duration_since(last_frame_time);
             last_frame_time = Instant::now();
             
-            delta = delta + (elapsed_time.unwrap().as_nanos() as f64) / NANOS_PER_TICK;
+            delta += (elapsed_time.unwrap().as_nanos() as f64) / NANOS_PER_TICK;
 
             while delta >= 1.0 {
                 delta -= 1.0;
+
                 self.tick(game_state);
-                tick_tracker = tick_tracker + 1;
+
+                tick_tracker += 1;
             }
 
-            if now.checked_duration_since(last_debug_print_time).unwrap().as_secs() >= 1
-            {
+            if now.checked_duration_since(last_debug_print_time).unwrap().as_secs() >= 1 {
                 last_debug_print_time = now;
 
                 println!("FPS: {}", frame_tracker);
@@ -74,16 +74,18 @@ impl Engine {
                 frame_tracker = 0;
                 tick_tracker = 0;
             }
-            
+
             self.render(game_state);
 
-            frame_tracker = frame_tracker + 1;
+            frame_tracker += 1;
 
             self.window.update();
         }
     }
 
     fn tick(&mut self, game_state: &mut dyn GameState) {
+        self.window.tick();
+        
         self.window.lock_mouse();
         self.camera.tick(&self.input_state.borrow());
         game_state.tick(&self.input_state.borrow());

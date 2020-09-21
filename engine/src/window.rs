@@ -35,6 +35,8 @@ impl Window {
     
         gl::load_with(|symbol| glfw_window.get_proc_address(symbol) as *const _);
     
+        glfw.set_swap_interval(glfw::SwapInterval::Sync(1));
+
         Window {
             should_close: false,
             width,

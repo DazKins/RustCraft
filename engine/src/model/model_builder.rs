@@ -89,7 +89,7 @@ impl ModelBuilder {
 
         self.indices.push(self.vertex_count);
 
-        self.vertex_count = self.vertex_count + 1;
+        self.vertex_count += 1;
     }
 
     // I'm not planning to do any complex model loading atm so I'll leave indices abstracted for now
