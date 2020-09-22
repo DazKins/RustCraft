@@ -1,8 +1,8 @@
-mod game_states;
+mod game;
 
 use engine::Engine;
 use engine::EngineConfig;
-use game_states::GameStatePlaying;
+use game::GameStatePlaying;
 
 fn main() {
     let engine_config = EngineConfig {

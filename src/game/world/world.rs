@@ -1,20 +1,13 @@
-use engine::GameState;
+use cgmath::{Vector2, Vector3};
+use engine::{RenderContext, Texture, input::InputState, model::Model, model::ModelBuilder};
 
-use engine::model::Model;
-use engine::model::ModelBuilder;
-use engine::input::InputState;
-use engine::Texture;
-use engine::RenderContext;
-
-use cgmath::{ Vector3, Vector2 };
-
-pub struct GameStatePlaying {
+pub struct World {
     model: Model,
     texture: Texture
 }
 
-impl GameStatePlaying {
-    pub fn new() -> GameStatePlaying {
+impl World {
+    pub fn new() -> Self {
         let mut model_builder = ModelBuilder::new();
 
         model_builder
@@ -45,18 +38,17 @@ impl GameStatePlaying {
 
         let model = model_builder.build();
 
-        GameStatePlaying {
+        World {
             model,
-            texture: Texture::new("container.jpg")
+            texture: Texture::new("container.jpg"),
         }
     }
-}
 
-impl GameState for GameStatePlaying {
-    fn tick(&mut self, input_state: &InputState) {
+    pub fn tick(&mut self, input_state: &InputState) {
+        
     }
 
-    fn render(&mut self, render_context: &mut RenderContext) {
+    pub fn render(&self, render_context: &mut RenderContext) {
         self.texture.bind();
         render_context.render(&self.model);
     }

@@ -4,9 +4,9 @@ use glfw::{ Context, Action , CursorMode};
 use std::{sync::mpsc::Receiver, cell::RefCell};
 use std::rc::Rc;
 
-use crate::input::InputState;
+use super::input::InputState;
 
-use crate::input::glfw_key_to_engine_key;
+use super::input::glfw_key_to_engine_key;
 
 pub struct Window {
     pub should_close: bool,

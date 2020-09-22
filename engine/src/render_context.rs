@@ -1,6 +1,6 @@
-use crate::matrix_stack::MatrixStack;
-use crate::model::Model;
-use crate::shader::Shader;
+use super::matrix_stack::MatrixStack;
+use super::model::Model;
+use super::shader::Shader;
 
 pub struct RenderContext {
     matrix_stack: MatrixStack,
