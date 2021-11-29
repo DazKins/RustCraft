@@ -34,7 +34,7 @@ impl Engine {
 
         self.window.close();
     }
-    
+
     fn run_loop(&mut self, game_state: &mut dyn GameState) {
         const TICKS_PER_SECOND: i32 = 60;
         const NANOS_PER_TICK: f64 = 1000000000.0 / TICKS_PER_SECOND as f64;
@@ -54,7 +54,7 @@ impl Engine {
 
             let elapsed_time = now.checked_duration_since(last_frame_time);
             last_frame_time = Instant::now();
-            
+
             delta += (elapsed_time.unwrap().as_nanos() as f64) / NANOS_PER_TICK;
 
             while delta >= 1.0 {
@@ -85,7 +85,7 @@ impl Engine {
 
     fn tick(&mut self, game_state: &mut dyn GameState) {
         self.window.tick();
-        
+
         self.window.lock_mouse();
         self.camera.tick(&self.input_state.borrow());
         game_state.tick(&self.input_state.borrow());
