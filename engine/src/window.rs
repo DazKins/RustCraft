@@ -26,7 +26,7 @@ impl Window {
         glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
         glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
 
-        let (mut glfw_window, event_receiver) = 
+        let (mut glfw_window, event_receiver) =
             glfw.create_window(width, height, "Rust GLFW", glfw::WindowMode::Windowed)
             .expect("Failed to create GLFW window");
 
@@ -34,6 +34,10 @@ impl Window {
         glfw_window.set_all_polling(true);
 
         gl::load_with(|symbol| glfw_window.get_proc_address(symbol) as *const _);
+
+        unsafe {
+            gl::Enable(gl::DEPTH_TEST);
+        }
 
         glfw.set_swap_interval(glfw::SwapInterval::Sync(1));
 
@@ -109,7 +113,7 @@ impl Window {
 
     pub fn clear(&self) {
         unsafe {
-            gl::Clear(gl::COLOR_BUFFER_BIT);
+            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
             gl::ClearColor(0.2, 0.3, 0.3, 1.0);
         }
     }

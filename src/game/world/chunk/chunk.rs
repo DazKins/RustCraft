@@ -1,11 +1,13 @@
 use cgmath::Vector2;
-use engine::{input::InputState, model::{ModelBuilder, Model}, RenderContext, GameState, Texture};
+use engine::{input::InputState, model::{ModelBuilder, Model}, RenderContext, Texture};
+
+use rand::Rng;
+
+use crate::game::world::{Block, block::{ BLOCK_AIR, BLOCK_STONE }};
 
 const CHUNK_WIDTH: usize = 16;
 const CHUNK_DEPTH: usize = 16;
-const CHUNK_HEIGHT: usize = 256;
-
-use crate::game::world::{Block, block::{ BLOCK_AIR }};
+const CHUNK_HEIGHT: usize = 128;
 
 pub struct Chunk {
     position: Vector2<f32>,
@@ -16,9 +18,23 @@ pub struct Chunk {
 
 impl Chunk {
     pub fn new() -> Self {
+        let mut blocks = [[[BLOCK_AIR; CHUNK_DEPTH]; CHUNK_HEIGHT]; CHUNK_WIDTH];
+
+        let mut rng = rand::thread_rng();
+
+        for x in 0..CHUNK_WIDTH {
+            for y in 0..CHUNK_HEIGHT {
+                for z in 0..CHUNK_DEPTH {
+                    if rng.gen_bool(0.01) {
+                        blocks[x][y][z] = BLOCK_STONE;
+                    }
+                }
+            }
+        }
+
         Chunk {
             position: Vector2::new(0.0, 0.0),
-            blocks: [[[BLOCK_AIR; CHUNK_DEPTH]; CHUNK_HEIGHT]; CHUNK_WIDTH],
+            blocks,
             model: None,
             texture: Texture::new("container.jpg")
         }
