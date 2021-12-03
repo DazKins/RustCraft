@@ -25,16 +25,16 @@ impl Window {
         glfw.window_hint(glfw::WindowHint::ContextVersion(3, 3));
         glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
         glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
-    
+
         let (mut glfw_window, event_receiver) = 
             glfw.create_window(width, height, "Rust GLFW", glfw::WindowMode::Windowed)
             .expect("Failed to create GLFW window");
-    
+
         glfw_window.make_current();
         glfw_window.set_all_polling(true);
-    
+
         gl::load_with(|symbol| glfw_window.get_proc_address(symbol) as *const _);
-    
+
         glfw.set_swap_interval(glfw::SwapInterval::Sync(1));
 
         Window {
@@ -106,7 +106,7 @@ impl Window {
     pub fn get_centre(&self) -> Vector2<f32> {
         return Vector2::new((self.width / 2) as f32, (self.height / 2) as f32)
     }
- 
+
     pub fn clear(&self) {
         unsafe {
             gl::Clear(gl::COLOR_BUFFER_BIT);
