@@ -1,23 +1,32 @@
 use engine::{RenderContext, input::InputState};
 
-use super::chunk::Chunk;
+use super::chunk::{Chunk, ChunkCoordinate};
 
 pub struct World {
-    chunk: Chunk
+    chunks: [Chunk; 4]
 }
 
 impl World {
     pub fn new() -> Self {
         World {
-            chunk: Chunk::new()
+            chunks: [
+                Chunk::new(ChunkCoordinate::new(0, 0)),
+                Chunk::new(ChunkCoordinate::new(1, 0)),
+                Chunk::new(ChunkCoordinate::new(0, 1)),
+                Chunk::new(ChunkCoordinate::new(1, 1))
+            ]
         }
     }
 
     pub fn tick(&mut self, input_state: &InputState) {
-        self.chunk.tick(input_state);
+        for chunk in self.chunks.iter_mut() {
+            chunk.tick(input_state);
+        }
     }
 
     pub fn render(&mut self, render_context: &mut RenderContext) {
-        self.chunk.render(render_context);
+        for chunk in self.chunks.iter_mut() {
+            chunk.render(render_context);
+        }
     }
 }
