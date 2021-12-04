@@ -2,19 +2,24 @@ use engine::{RenderContext, input::InputState};
 
 use super::chunk::{Chunk, ChunkCoordinate};
 
+const WORLD_SIZE: i32 = 8;
+
 pub struct World {
-    chunks: [Chunk; 4]
+    chunks: Vec<Chunk>
 }
 
 impl World {
     pub fn new() -> Self {
+        let mut chunks = Vec::new();
+
+        for x in 0..WORLD_SIZE {
+            for z in 0..WORLD_SIZE {
+                chunks.push(Chunk::new(ChunkCoordinate::new(x, z)))
+            }
+        }
+
         World {
-            chunks: [
-                Chunk::new(ChunkCoordinate::new(0, 0)),
-                Chunk::new(ChunkCoordinate::new(1, 0)),
-                Chunk::new(ChunkCoordinate::new(0, 1)),
-                Chunk::new(ChunkCoordinate::new(1, 1))
-            ]
+            chunks
         }
     }
 
