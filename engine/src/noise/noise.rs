@@ -17,7 +17,6 @@ fn lerp(w: f32, a: f32, b: f32) -> f32 {
     a + w * (b - a)
 }
 
-
 pub struct Noise {
     grid_vectors: HashMap<GridCoordinate, Vector2<f32>>
 }
@@ -34,7 +33,7 @@ impl Noise {
         match self.grid_vectors.get(&grid_coordinate) {
             Some(v) => v.to_owned(),
             None => {
-                let vec = Vector2::new(rng.gen_range(0.0..1.0), rng.gen_range(0.0..1.0));
+                let vec = Vector2::new(rng.gen_range(-1.0..1.0), rng.gen_range(-1.0..1.0)).normalize();
                 self.grid_vectors.insert(grid_coordinate, vec);
                 vec
             }
@@ -42,33 +41,36 @@ impl Noise {
     }
 
     pub fn sample(&mut self, vec: Vector2<f32>) -> f32 {
-        let delta = 0.0001;
+        let gv00 = Vector2::new(vec.x.floor(), vec.y.floor());
+        let gv10 = Vector2::new((vec.x + 1.0).floor(), vec.y.floor());
+        let gv01 = Vector2::new(vec.x.floor(), (vec.y + 1.0).floor());
+        let gv11 = Vector2::new((vec.x + 1.0).floor(), (vec.y + 1.0).floor());
 
-        let gv0 = Vector2::new(vec.x.floor() + delta, vec.y.floor() + delta);
-        let gv1 = Vector2::new((vec.x + 1.0).floor() + delta, vec.y.floor() + delta);
-        let gv2 = Vector2::new(vec.x.floor() + delta, (vec.y + 1.0).floor() + delta);
-        let gv3 = Vector2::new((vec.x + 1.0).floor() + delta, (vec.y + 1.0).ceil() + delta);
+        let v00 = self.get_grid_vector(GridCoordinate { x: gv00.x as i32, y: gv00.y as i32 });
+        let v10 = self.get_grid_vector(GridCoordinate { x: gv10.x as i32, y: gv10.y as i32 });
+        let v01 = self.get_grid_vector(GridCoordinate { x: gv01.x as i32, y: gv01.y as i32 });
+        let v11 = self.get_grid_vector(GridCoordinate { x: gv11.x as i32, y: gv11.y as i32 });
 
-        let v0 = self.get_grid_vector(GridCoordinate { x: gv0.x as i32, y: gv0.y as i32 });
-        let v1 = self.get_grid_vector(GridCoordinate { x: gv1.x as i32, y: gv1.y as i32 });
-        let v2 = self.get_grid_vector(GridCoordinate { x: gv2.x as i32, y: gv2.y as i32 });
-        let v3 = self.get_grid_vector(GridCoordinate { x: gv3.x as i32, y: gv3.y as i32 });
+        let dv00 = vec - gv00;
+        let dv10 = vec - gv10;
+        let dv01 = vec - gv01;
+        let dv11 = vec - gv11;
 
-        let dv0 = vec - gv0;
-        let dv1 = vec - gv1;
-        let dv2 = vec - gv2;
-        let dv3 = vec - gv3;
-
-        let w0 = v0.dot(dv0.normalize());
-        let w1 = v1.dot(dv1.normalize());
-        let w2 = v2.dot(dv2.normalize());
-        let w3 = v3.dot(dv3.normalize());
+        let w00 = v00.dot(dv00);
+        let w10 = v10.dot(dv10);
+        let w01 = v01.dot(dv01);
+        let w11 = v11.dot(dv11);
 
         let sx = weigh(vec.x - vec.x.floor());
         let sy = weigh(vec.y - vec.y.floor());
 
-        let a = lerp(sx, w0, w1);
-        let b = lerp(sx, w2, w3);
-        lerp(sy, a, b)
+        let a = lerp(sy, w00, w01);
+        let b = lerp(sy, w10, w11);
+
+        static CORRECTIVE_CONSTANT: f32 = 1.4142135623730950488016887242096980785696718753769480731766797381; // root(2)
+
+        let v = lerp(sx, a, b) * CORRECTIVE_CONSTANT;
+
+        v.clamp(-1.0, 1.0)
     }
 }
