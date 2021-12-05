@@ -1,5 +1,6 @@
 pub mod input;
 pub mod model;
+pub mod noise;
 
 mod camera;
 pub use self::camera::Camera;

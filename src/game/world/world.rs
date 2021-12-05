@@ -1,4 +1,4 @@
-use engine::{RenderContext, input::InputState};
+use engine::{RenderContext, input::InputState, noise::Noise};
 
 use super::chunk::{Chunk, ChunkCoordinate};
 
@@ -10,11 +10,13 @@ pub struct World {
 
 impl World {
     pub fn new() -> Self {
+        let mut noise = Noise::new();
+
         let mut chunks = Vec::new();
 
         for x in 0..WORLD_SIZE {
             for z in 0..WORLD_SIZE {
-                chunks.push(Chunk::new(ChunkCoordinate::new(x, z)))
+                chunks.push(Chunk::new(ChunkCoordinate::new(x, z), &mut noise))
             }
         }
 
