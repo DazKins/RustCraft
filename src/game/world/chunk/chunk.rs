@@ -21,14 +21,14 @@ impl ChunkCoordinate {
 
 pub struct Chunk {
     position: ChunkCoordinate,
-    blocks: Box<[[[Block; (CHUNK_SIZE as usize)]; (CHUNK_HEIGHT as usize)]; (CHUNK_SIZE as usize)]>,
+    blocks: Vec<Vec<Vec<Block>>>,
     model: Option<Model>,
     texture: Texture
 }
 
 impl Chunk {
     pub fn new(chunk_coordinate: ChunkCoordinate, noise: &mut Noise) -> Self {
-        let mut blocks = Box::new([[[BLOCK_AIR; CHUNK_SIZE as usize]; CHUNK_HEIGHT as usize]; CHUNK_SIZE as usize]);
+        let mut blocks = vec![vec![vec![BLOCK_AIR; CHUNK_SIZE as usize]; CHUNK_HEIGHT as usize]; CHUNK_SIZE as usize];
 
         for x in 0..CHUNK_SIZE {
             for z in 0..CHUNK_SIZE {
@@ -37,13 +37,9 @@ impl Chunk {
 
                 let sample = noise.sample(Vector2::new((worldx as f32) / (CHUNK_SIZE as f32), (worldz as f32) / (CHUNK_SIZE as f32)));
 
-                let height = sample * 20.0 + 30.0;
+                let height = (sample * 20.0 + 30.0).clamp(0.0, CHUNK_HEIGHT as f32) as u32;
 
-                for y in 0..CHUNK_HEIGHT {
-                    if y as f32 > height {
-                        continue;
-                    }
-
+                for y in 0..height {
                     blocks[x as usize][y as usize][z as usize] = BLOCK_GRASS;
                 }
             }
