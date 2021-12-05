@@ -18,12 +18,37 @@ fn lerp(w: f32, a: f32, b: f32) -> f32 {
 }
 
 pub struct Noise {
-    grid_vectors: HashMap<GridCoordinate, Vector2<f32>>
+    perlin_noise: PerlinNoise
 }
 
 impl Noise {
     pub fn new() -> Self {
         Noise {
+            perlin_noise: PerlinNoise::new()
+        }
+    }
+
+    pub fn sample(&mut self, vec: Vector2<f32>) -> f32 {
+        let s0 = self.perlin_noise.sample(vec * 0.25);
+        let s1 = self.perlin_noise.sample(vec * 0.5);
+        let s2 = self.perlin_noise.sample(vec * 1.0);
+        let s3 = self.perlin_noise.sample(vec * 2.0);
+        let s4 = self.perlin_noise.sample(vec * 4.0);
+        let s5 = self.perlin_noise.sample(vec * 8.0);
+        let s6 = self.perlin_noise.sample(vec * 16.0);
+        let s7 = self.perlin_noise.sample(vec * 32.0);
+
+        s0 + s1 / 2.0 + s2 / 4.0 + s3 / 8.0 + s4 / 16.0 + s5 / 32.0 + s6 / 64.0 + s7 / 128.0
+    }
+}
+
+struct PerlinNoise {
+    grid_vectors: HashMap<GridCoordinate, Vector2<f32>>
+}
+
+impl PerlinNoise {
+    pub fn new() -> Self {
+        PerlinNoise {
             grid_vectors: HashMap::new()
         }
     }
