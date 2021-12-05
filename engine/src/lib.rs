@@ -22,6 +22,7 @@ pub use self::shader::Shader;
 
 mod texture;
 pub use self::texture::Texture;
+pub use self::texture::TextureCoordinate;
 
 mod window;
 pub use self::window::Window;

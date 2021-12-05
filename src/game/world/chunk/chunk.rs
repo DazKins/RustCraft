@@ -1,7 +1,7 @@
 use cgmath::{Vector2, Matrix4, Vector3};
 use engine::{input::InputState, model::{ModelBuilder, Model}, RenderContext, Texture, noise::Noise};
 
-use crate::game::world::{Block, block::{ BLOCK_AIR, BLOCK_STONE }};
+use crate::game::world::{Block, block::{BLOCK_GRASS, BLOCK_AIR}};
 
 const CHUNK_SIZE: u32 = 16;
 const CHUNK_HEIGHT: u32 = 128;
@@ -21,14 +21,14 @@ impl ChunkCoordinate {
 
 pub struct Chunk {
     position: ChunkCoordinate,
-    blocks: [[[Block; (CHUNK_SIZE as usize)]; (CHUNK_HEIGHT as usize)]; (CHUNK_SIZE as usize)],
+    blocks: Box<[[[Block; (CHUNK_SIZE as usize)]; (CHUNK_HEIGHT as usize)]; (CHUNK_SIZE as usize)]>,
     model: Option<Model>,
     texture: Texture
 }
 
 impl Chunk {
     pub fn new(chunk_coordinate: ChunkCoordinate, noise: &mut Noise) -> Self {
-        let mut blocks = [[[BLOCK_AIR; (CHUNK_SIZE as usize)]; (CHUNK_HEIGHT as usize)]; (CHUNK_SIZE as usize)];
+        let mut blocks = Box::new([[[BLOCK_AIR; CHUNK_SIZE as usize]; CHUNK_HEIGHT as usize]; CHUNK_SIZE as usize]);
 
         for x in 0..CHUNK_SIZE {
             for z in 0..CHUNK_SIZE {
@@ -44,16 +44,16 @@ impl Chunk {
                         continue;
                     }
 
-                    blocks[x as usize][y as usize][z as usize] = BLOCK_STONE;
+                    blocks[x as usize][y as usize][z as usize] = BLOCK_GRASS;
                 }
             }
         }
 
         Chunk {
             position: chunk_coordinate,
-            blocks,
+            blocks: blocks,
             model: None,
-            texture: Texture::new("container.jpg")
+            texture: Texture::new("block.png")
         }
     }
 
@@ -61,8 +61,6 @@ impl Chunk {
     }
 
     pub fn render(&mut self, render_context: &mut RenderContext) {
-        self.texture.bind();
-
         if self.model.is_none() {
             self.model = Option::Some(self.generate())
         }
@@ -80,7 +78,7 @@ impl Chunk {
     }
 
     pub fn generate(&self) -> Model {
-        let mut model_builder = ModelBuilder::new();
+        let mut model_builder = ModelBuilder::new(self.texture);
 
         for x in 0..CHUNK_SIZE {
             for y in 0..CHUNK_HEIGHT {

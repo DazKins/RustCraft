@@ -4,6 +4,8 @@ use std::mem;
 use std::os::raw::c_void;
 use std::ptr;
 
+use crate::Texture;
+
 const POSITION_ATTRIBUTE_LOCATION: u32 = 0;
 const TEXTURE_ATTRIBUTE_LOCATION: u32 = 1;
 
@@ -14,11 +16,12 @@ const VERTEX_DATA_SIZE: u32 = VERTEX_POSITION_SIZE + VERTEX_TEXTURE_SIZE;
 
 pub struct Model {
     vao_id: GLuint,
-    index_count: i32
+    index_count: i32,
+    texture: Texture
 }
 
 impl Model {
-    pub fn new(vertices: &[f32], indices: &[i32]) -> Model {
+    pub fn new(vertices: &[f32], indices: &[i32], texture: Texture) -> Model {
         let vao_id = unsafe {
             let (mut vao_id, mut vbo_id, mut ebo_id) = (0, 0, 0);
 
@@ -60,11 +63,13 @@ impl Model {
 
         return Model {
             vao_id,
-            index_count: indices.len() as i32
+            index_count: indices.len() as i32,
+            texture
         };
     }
 
     pub fn render(&self) {
+        self.texture.bind();
         unsafe {
             gl::BindVertexArray(self.vao_id);
             gl::DrawElements(gl::TRIANGLES, self.index_count as i32, gl::UNSIGNED_INT, ptr::null());

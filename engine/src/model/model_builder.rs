@@ -1,7 +1,7 @@
 use std::vec::Vec;
 use cgmath::{ Vector3, Vector2 };
 
-use crate::model::Model;
+use crate::{model::Model, Texture, texture::TextureCoordinate};
 
 pub struct ModelBuilder {
     x: f32,
@@ -14,11 +14,13 @@ pub struct ModelBuilder {
     vertex_data: Vec<f32>,
     indices: Vec<i32>,
 
-    vertex_count: i32
+    vertex_count: i32,
+
+    texture: Texture
 }
 
 impl ModelBuilder {
-    pub fn new() -> ModelBuilder {
+    pub fn new(texture: Texture) -> ModelBuilder {
         return ModelBuilder {
             x: 0.0,
             y: 0.0,
@@ -30,11 +32,22 @@ impl ModelBuilder {
             vertex_count: 0,
 
             vertex_data: Vec::new(),
-            indices: Vec::new()
+            indices: Vec::new(),
+
+            texture
         }
     }
 
     pub fn set_uv(&mut self, uv: Vector2<f32>) -> &mut ModelBuilder {
+        self.u = uv.x;
+        self.v = uv.y;
+
+        self
+    }
+
+    pub fn set_texcoord(&mut self, txc: TextureCoordinate) -> &mut ModelBuilder {
+        let uv= self.texture.get_uv(txc);
+
         self.u = uv.x;
         self.v = uv.y;
 
@@ -98,6 +111,6 @@ impl ModelBuilder {
     // }
 
     pub fn build(&self) -> Model {
-        return Model::new(self.vertex_data.as_slice(), self.indices.as_slice());
+        return Model::new(self.vertex_data.as_slice(), self.indices.as_slice(), self.texture);
     }
 }
