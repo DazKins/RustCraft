@@ -1,6 +1,8 @@
 use cgmath::Vector3;
 use engine::{model::ModelBuilder, TextureCoordinate};
 
+use crate::game::world::chunk::{ChunkCoordinate, CHUNK_SIZE, ChunkBlockCoordinate, CHUNK_HEIGHT};
+
 const BLOCK_TEXTURE_SIZE: u32 = 32;
 
 #[derive(Clone, Copy)]
@@ -241,3 +243,32 @@ pub const BLOCK_GRASS: Block = Block {
     left_tex_loc: TextureCoordinate::new(32,0),
     right_tex_loc: TextureCoordinate::new(32,0),
 };
+
+pub struct BlockCoordinate {
+    x: i32,
+    y: i32,
+    z: i32
+}
+
+impl BlockCoordinate {
+    pub fn new(x: i32, y: i32, z: i32) -> Self {
+        BlockCoordinate {
+            x, y, z
+        }
+    }
+
+    pub fn to_chunk_coordinate(&self) -> ChunkCoordinate {
+        ChunkCoordinate::new(
+            self.x / (CHUNK_SIZE as i32),
+            self.x / (CHUNK_SIZE as i32),
+        )
+    }
+
+    pub fn to_chunk_block_coordinate(&self) -> ChunkBlockCoordinate {
+        ChunkBlockCoordinate::new(
+            self.x.rem_euclid(CHUNK_SIZE as i32) as u32,
+            self.y.rem_euclid(CHUNK_HEIGHT as i32) as u32,
+            self.z.rem_euclid(CHUNK_SIZE as i32) as u32
+        )
+    }
+}

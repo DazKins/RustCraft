@@ -1,11 +1,12 @@
 use cgmath::{Vector2, Matrix4, Vector3};
 use engine::{input::InputState, model::{ModelBuilder, Model}, RenderContext, Texture, noise::Noise};
 
-use crate::game::world::{Block, block::{BLOCK_GRASS, BLOCK_AIR}};
+use crate::game::world::{Block, block::{BLOCK_GRASS, BLOCK_AIR}, World};
 
-const CHUNK_SIZE: u32 = 16;
-const CHUNK_HEIGHT: u32 = 128;
+pub const CHUNK_SIZE: u32 = 16;
+pub const CHUNK_HEIGHT: u32 = 128;
 
+#[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub struct ChunkCoordinate {
     x: i32,
     z: i32
@@ -15,6 +16,22 @@ impl ChunkCoordinate {
     pub fn new(x: i32, z: i32) -> Self {
         ChunkCoordinate {
             x, z
+        }
+    }
+}
+
+pub struct ChunkBlockCoordinate {
+    x: u32,
+    y: u32,
+    z: u32
+}
+
+impl ChunkBlockCoordinate {
+    pub fn new(x: u32, y: u32, z: u32) -> Self {
+        ChunkBlockCoordinate {
+            x: x.rem_euclid(CHUNK_SIZE),
+            y: y.rem_euclid(CHUNK_HEIGHT),
+            z: z.rem_euclid(CHUNK_SIZE)
         }
     }
 }
@@ -85,5 +102,12 @@ impl Chunk {
         }
 
         model_builder.build()
+    }
+
+    pub fn get_block(&self, chunk_block_coordinate: ChunkBlockCoordinate) -> Block {
+        self.blocks
+            [chunk_block_coordinate.x as usize]
+            [chunk_block_coordinate.y as usize]
+            [chunk_block_coordinate.z as usize]
     }
 }
