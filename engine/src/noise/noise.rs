@@ -21,16 +21,14 @@ pub struct Noise {
     octaves: u8,
     persistence: f32,
     base_frequency: f32,
-    base_amplitude: f32,
     perlin_noise: PerlinNoise
 }
 
 impl Noise {
-    pub fn new(octaves: u8, persistence: f32, amplitude: f32, frequency: f32) -> Self {
+    pub fn new(octaves: u8, persistence: f32,frequency: f32) -> Self {
         Noise {
             octaves,
             persistence,
-            base_amplitude: amplitude,
             base_frequency: frequency,
             perlin_noise: PerlinNoise::new()
         }
@@ -39,7 +37,7 @@ impl Noise {
     pub fn sample(&mut self, vec: Vector2<f32>) -> f32 {
         let mut sample: f32 = 0.0;
         let mut frequency: f32 = self.base_frequency;
-        let mut amplitude = self.base_amplitude;
+        let mut amplitude = 1.0;
         let mut corrective_constant = 0.0;
 
         for _ in 0..self.octaves {

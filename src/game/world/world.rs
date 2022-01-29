@@ -10,7 +10,7 @@ pub struct World {
 
 impl World {
     pub fn new() -> Self {
-        let mut noise = Noise::new(8, 2.0, 1.0, 1.0);
+        let mut noise = Noise::new(8, 1.7, 0.125);
 
         let mut chunks = Vec::new();
 
