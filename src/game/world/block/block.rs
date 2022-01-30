@@ -11,15 +11,15 @@ pub struct Block {
 
     top_tex_loc: TextureCoordinate,
     bottom_tex_loc: TextureCoordinate,
-    front_tex_loc: TextureCoordinate,
-    back_tex_loc: TextureCoordinate,
-    left_tex_loc: TextureCoordinate,
-    right_tex_loc: TextureCoordinate,
+    north_tex_loc: TextureCoordinate,
+    south_tex_loc: TextureCoordinate,
+    west_tex_loc: TextureCoordinate,
+    east_tex_loc: TextureCoordinate,
 }
 
 impl Block {
-    fn generate_back_face(&self, model_builder: &mut ModelBuilder, x: u32, y: u32, z: u32) {
-        let t00 = self.back_tex_loc;
+    fn generate_south_face(&self, model_builder: &mut ModelBuilder, x: u32, y: u32, z: u32) {
+        let t00 = self.south_tex_loc;
         let t10 = t00.add_x(BLOCK_TEXTURE_SIZE);
         let t01 = t00.add_y(BLOCK_TEXTURE_SIZE);
         let t11 = t10.add_y(BLOCK_TEXTURE_SIZE);
@@ -50,8 +50,8 @@ impl Block {
             .push_vertex();
     }
 
-    fn generate_front_face(&self, model_builder: &mut ModelBuilder, x: u32, y: u32, z: u32) {
-        let t00 = self.front_tex_loc;
+    fn generate_north_face(&self, model_builder: &mut ModelBuilder, x: u32, y: u32, z: u32) {
+        let t00 = self.north_tex_loc;
         let t10 = t00.add_x(BLOCK_TEXTURE_SIZE);
         let t01 = t00.add_y(BLOCK_TEXTURE_SIZE);
         let t11 = t10.add_y(BLOCK_TEXTURE_SIZE);
@@ -82,8 +82,8 @@ impl Block {
             .push_vertex();
     }
 
-    fn generate_right_face(&self, model_builder: &mut ModelBuilder, x: u32, y: u32, z: u32) {
-        let t00 = self.right_tex_loc;
+    fn generate_east_face(&self, model_builder: &mut ModelBuilder, x: u32, y: u32, z: u32) {
+        let t00 = self.east_tex_loc;
         let t10 = t00.add_x(BLOCK_TEXTURE_SIZE);
         let t01 = t00.add_y(BLOCK_TEXTURE_SIZE);
         let t11 = t10.add_y(BLOCK_TEXTURE_SIZE);
@@ -114,8 +114,8 @@ impl Block {
             .push_vertex();
     }
 
-    fn generate_left_face(&self, model_builder: &mut ModelBuilder, x: u32, y: u32, z: u32) {
-        let t00 = self.left_tex_loc;
+    fn generate_west_face(&self, model_builder: &mut ModelBuilder, x: u32, y: u32, z: u32) {
+        let t00 = self.west_tex_loc;
         let t10 = t00.add_x(BLOCK_TEXTURE_SIZE);
         let t01 = t00.add_y(BLOCK_TEXTURE_SIZE);
         let t11 = t10.add_y(BLOCK_TEXTURE_SIZE);
@@ -210,14 +210,32 @@ impl Block {
             .push_vertex();
     }
 
-    pub fn generate(&self, model_builder: &mut ModelBuilder, x: u32, y: u32, z: u32) {
+    pub fn generate(&self,
+        model_builder: &mut ModelBuilder,
+        x: u32, y: u32, z: u32,
+        north_block: Block, south_block: Block,
+        east_block: Block, west_block: Block,
+        top_block: Block, bottom_block: Block
+    ) {
         if self.is_solid {
-            self.generate_back_face(model_builder, x, y, z);
-            self.generate_front_face(model_builder, x, y, z);
-            self.generate_right_face(model_builder, x, y, z);
-            self.generate_left_face(model_builder, x, y, z);
-            self.generate_top_face(model_builder, x, y, z);
-            self.generate_bottom_face(model_builder, x, y, z);
+            if !south_block.is_solid {
+                self.generate_south_face(model_builder, x, y, z);
+            }
+            if !north_block.is_solid {
+                self.generate_north_face(model_builder, x, y, z);
+            }
+            if !east_block.is_solid {
+                self.generate_east_face(model_builder, x, y, z);
+            }
+            if !west_block.is_solid {
+                self.generate_west_face(model_builder, x, y, z);
+            }
+            if !top_block.is_solid {
+                self.generate_top_face(model_builder, x, y, z);
+            }
+            if !bottom_block.is_solid {
+                self.generate_bottom_face(model_builder, x, y, z);
+            }
         }
     }
 }
@@ -227,10 +245,10 @@ pub const BLOCK_AIR: Block = Block {
 
     top_tex_loc: TextureCoordinate::new(0,0),
     bottom_tex_loc: TextureCoordinate::new(0,0),
-    front_tex_loc: TextureCoordinate::new(0,0),
-    back_tex_loc: TextureCoordinate::new(0,0),
-    left_tex_loc: TextureCoordinate::new(0,0),
-    right_tex_loc: TextureCoordinate::new(0,0),
+    north_tex_loc: TextureCoordinate::new(0,0),
+    south_tex_loc: TextureCoordinate::new(0,0),
+    west_tex_loc: TextureCoordinate::new(0,0),
+    east_tex_loc: TextureCoordinate::new(0,0),
 };
 
 pub const BLOCK_GRASS: Block = Block {
@@ -238,10 +256,10 @@ pub const BLOCK_GRASS: Block = Block {
 
     top_tex_loc: TextureCoordinate::new(0,0),
     bottom_tex_loc: TextureCoordinate::new(64,0),
-    front_tex_loc: TextureCoordinate::new(32,0),
-    back_tex_loc: TextureCoordinate::new(32,0),
-    left_tex_loc: TextureCoordinate::new(32,0),
-    right_tex_loc: TextureCoordinate::new(32,0),
+    north_tex_loc: TextureCoordinate::new(32,0),
+    south_tex_loc: TextureCoordinate::new(32,0),
+    west_tex_loc: TextureCoordinate::new(32,0),
+    east_tex_loc: TextureCoordinate::new(32,0),
 };
 
 pub struct BlockCoordinate {

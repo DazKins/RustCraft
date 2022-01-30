@@ -96,7 +96,44 @@ impl Chunk {
         for x in 0..CHUNK_SIZE {
             for y in 0..CHUNK_HEIGHT {
                 for z in 0..CHUNK_SIZE {
-                    self.blocks[x as usize][y as usize][z as usize].generate(&mut model_builder, x as u32, y as u32, z as u32);
+                    let mut north_block = BLOCK_AIR;
+                    let mut south_block = BLOCK_AIR;
+                    let mut east_block = BLOCK_AIR;
+                    let mut west_block = BLOCK_AIR;
+                    let mut top_block = BLOCK_AIR;
+                    let mut bottom_block = BLOCK_AIR;
+
+                    if z < CHUNK_SIZE - 1 {
+                        north_block = self.blocks[x as usize][y as usize][z as usize + 1]
+                    }
+
+                    if z > 0 {
+                        south_block = self.blocks[x as usize][y as usize][z as usize - 1]
+                    }
+
+                    if x < CHUNK_SIZE - 1 {
+                        east_block = self.blocks[x as usize + 1][y as usize][z as usize]
+                    }
+
+                    if x > 0 {
+                        west_block = self.blocks[x as usize - 1][y as usize][z as usize]
+                    }
+
+                    if y < CHUNK_HEIGHT - 1 {
+                        top_block = self.blocks[x as usize][y as usize + 1][z as usize]
+                    }
+
+                    if y > 0 {
+                        bottom_block = self.blocks[x as usize][y as usize - 1][z as usize]
+                    }
+
+                    self.blocks[x as usize][y as usize][z as usize].generate(
+                        &mut model_builder,
+                        x as u32, y as u32, z as u32,
+                        north_block, south_block,
+                        east_block, west_block,
+                        top_block, bottom_block
+                    );
                 }
             }
         }
