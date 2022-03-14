@@ -18,6 +18,20 @@ impl ChunkCoordinate {
             x, z
         }
     }
+
+    pub fn add_x(&self, x: i32) -> ChunkCoordinate {
+        ChunkCoordinate {
+            x: self.x + x,
+            z: self.z
+        }
+    }
+
+    pub fn add_z(&self, z: i32) -> ChunkCoordinate {
+        ChunkCoordinate {
+            x: self.x,
+            z: self.z + z
+        }
+    }
 }
 
 pub struct ChunkBlockCoordinate {
@@ -73,9 +87,9 @@ impl Chunk {
     pub fn tick(&mut self, input_state: &InputState) {
     }
 
-    pub fn render(&mut self, render_context: &mut RenderContext) {
+    pub fn render(&mut self, render_context: &mut RenderContext, north_chunk: Option<&Chunk>, south_chunk: Option<&Chunk>, east_chunk: Option<&Chunk>, west_chunk: Option<&Chunk>) {
         if self.model.is_none() {
-            self.model = Option::Some(self.generate())
+            self.model = Some(self.generate(north_chunk, south_chunk, east_chunk, west_chunk))
         }
 
         let world_x = (CHUNK_SIZE as i32 * self.position.x) as f32;
@@ -90,42 +104,59 @@ impl Chunk {
         render_context.get_matrix_stack().pop();
     }
 
-    pub fn generate(&self) -> Model {
+    pub fn generate(&self, north_chunk: Option<&Chunk>, south_chunk: Option<&Chunk>, east_chunk: Option<&Chunk>, west_chunk: Option<&Chunk>) -> Model {
         let mut model_builder = ModelBuilder::new(self.texture);
 
         for x in 0..CHUNK_SIZE {
             for y in 0..CHUNK_HEIGHT {
                 for z in 0..CHUNK_SIZE {
-                    let mut north_block = BLOCK_AIR;
-                    let mut south_block = BLOCK_AIR;
-                    let mut east_block = BLOCK_AIR;
-                    let mut west_block = BLOCK_AIR;
-                    let mut top_block = BLOCK_AIR;
-                    let mut bottom_block = BLOCK_AIR;
-
-                    if z < CHUNK_SIZE - 1 {
-                        north_block = self.blocks[x as usize][y as usize][z as usize + 1]
+                    let north_block = if z < CHUNK_SIZE - 1 {
+                        self.blocks[x as usize][y as usize][z as usize + 1]
+                    } else {
+                        match north_chunk {
+                            Some(chunk) => chunk.get_block(ChunkBlockCoordinate::new(x, y, 0)),
+                            None => BLOCK_AIR
                     }
+                    };
 
-                    if z > 0 {
-                        south_block = self.blocks[x as usize][y as usize][z as usize - 1]
+                    let south_block = if z > 0 {
+                        self.blocks[x as usize][y as usize][z as usize - 1]
+                    } else {
+                        match south_chunk {
+                            Some(chunk) => chunk.get_block(ChunkBlockCoordinate::new(x, y, CHUNK_SIZE - 1)),
+                            None => BLOCK_AIR
                     }
+                    };
 
-                    if x < CHUNK_SIZE - 1 {
-                        east_block = self.blocks[x as usize + 1][y as usize][z as usize]
+                    let east_block = if x < CHUNK_SIZE - 1 {
+                        self.blocks[x as usize + 1][y as usize][z as usize]
+                    } else {
+                        match east_chunk {
+                            Some(chunk) => chunk.get_block(ChunkBlockCoordinate::new(0, y, z)),
+                            None => BLOCK_AIR
                     }
+                    };
 
-                    if x > 0 {
-                        west_block = self.blocks[x as usize - 1][y as usize][z as usize]
+                    let west_block = if x > 0 {
+                        self.blocks[x as usize - 1][y as usize][z as usize]
+                    } else {
+                        match west_chunk {
+                            Some(chunk) => chunk.get_block(ChunkBlockCoordinate::new(CHUNK_SIZE - 1, y, z)),
+                            None => BLOCK_AIR
                     }
+                    };
 
-                    if y < CHUNK_HEIGHT - 1 {
-                        top_block = self.blocks[x as usize][y as usize + 1][z as usize]
-                    }
+                    let top_block = if y < CHUNK_HEIGHT - 1 {
+                        self.blocks[x as usize][y as usize + 1][z as usize]
+                    } else {
+                        BLOCK_AIR
+                    };
 
-                    if y > 0 {
-                        bottom_block = self.blocks[x as usize][y as usize - 1][z as usize]
-                    }
+                    let bottom_block = if y > 0 {
+                        self.blocks[x as usize][y as usize - 1][z as usize]
+                    } else {
+                        BLOCK_AIR
+                    };
 
                     self.blocks[x as usize][y as usize][z as usize].generate(
                         &mut model_builder,
