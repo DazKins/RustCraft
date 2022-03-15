@@ -1,8 +1,7 @@
 use crate::{Window, Camera};
-use crate::input::InputState;
 use crate::GameState;
 use crate::RenderContext;
-use std::{time::Instant, cell::RefCell, rc::Rc};
+use std::time::Instant;
 
 pub struct EngineConfig {
     pub window_width: u32,
@@ -11,7 +10,6 @@ pub struct EngineConfig {
 
 pub struct Engine {
     window: Window,
-    input_state: Rc<RefCell<InputState>>,
     render_context: RenderContext,
     camera: Camera
 }
@@ -19,11 +17,8 @@ pub struct Engine {
 impl Engine {
     pub fn new(config: EngineConfig) -> Engine
     {
-        let input_state = Rc::new(RefCell::new(InputState::new()));
-
         Engine {
-            window: Window::new(config.window_width, config.window_height, Rc::clone(&input_state)),
-            input_state: Rc::clone(&input_state),
+            window: Window::new(config.window_width, config.window_height),
             render_context: RenderContext::new(),
             camera: Camera::new(90.0, 1.0, 0.01, 1000.0)
         }
@@ -87,8 +82,8 @@ impl Engine {
         self.window.tick();
 
         self.window.lock_mouse();
-        self.camera.tick(&self.input_state.borrow());
-        game_state.tick(&self.input_state.borrow());
+        self.camera.tick(self.window.get_input_state());
+        game_state.tick(self.window.get_input_state());
     }
 
     fn render(&mut self, game_state: &mut dyn GameState) {

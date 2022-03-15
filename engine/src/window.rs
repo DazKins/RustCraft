@@ -1,8 +1,7 @@
 use cgmath::Vector2;
 use glfw::{ Context, Action , CursorMode};
 
-use std::{sync::mpsc::Receiver, cell::RefCell};
-use std::rc::Rc;
+use std::sync::mpsc::Receiver;
 
 use super::input::InputState;
 
@@ -15,12 +14,16 @@ pub struct Window {
     glfw: glfw::Glfw,
     glfw_window: glfw::Window,
     event_receiver: Receiver<(f64, glfw::WindowEvent)>,
-    input_state: Rc<RefCell<InputState>>,
+    input_state: InputState,
     mouse_locked: bool
 }
 
 impl Window {
-    pub fn new(width: u32, height: u32 , input_state: Rc<RefCell<InputState>>) -> Window {
+    pub fn get_input_state(&self) -> &InputState {
+        &self.input_state
+    }
+
+    pub fn new(width: u32, height: u32) -> Window {
         let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
         glfw.window_hint(glfw::WindowHint::ContextVersion(3, 3));
         glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
@@ -48,7 +51,7 @@ impl Window {
             glfw,
             glfw_window,
             event_receiver,
-            input_state,
+            input_state: InputState::new(),
             mouse_locked: false
         }
     }
@@ -64,12 +67,12 @@ impl Window {
                     }
                 }
                 glfw::WindowEvent::CursorPos(x, y) => {
-                    self.input_state.borrow_mut().set_mouse_position(&Vector2::new(x as f32, y as f32))
+                    self.input_state.set_mouse_position(&Vector2::new(x as f32, y as f32))
                 }
                 glfw::WindowEvent::Key(key, _, action, _) => {
                     match action {
-                        Action::Press => self.input_state.borrow_mut().set_pressed(glfw_key_to_engine_key(key)),
-                        Action::Release => self.input_state.borrow_mut().set_released(glfw_key_to_engine_key(key)),
+                        Action::Press => self.input_state.set_pressed(glfw_key_to_engine_key(key)),
+                        Action::Release => self.input_state.set_released(glfw_key_to_engine_key(key)),
                         _ => {}
                     }
                 }
@@ -79,8 +82,8 @@ impl Window {
 
         if self.mouse_locked {
             let centre = self.get_centre();
-            let mouse_position = self.input_state.borrow().get_mouse_position();
-            self.input_state.borrow_mut().set_mouse_speed(&(mouse_position - centre));
+            let mouse_position = self.input_state.get_mouse_position();
+            self.input_state.set_mouse_speed(&(mouse_position - centre));
             self.set_cursor_pos(&self.get_centre())
         }
     }
