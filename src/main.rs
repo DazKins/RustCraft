@@ -1,4 +1,5 @@
 mod game;
+mod render;
 
 use engine::Engine;
 use engine::EngineConfig;

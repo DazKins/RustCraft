@@ -2,16 +2,20 @@ use engine::GameState;
 use engine::input::InputState;
 use engine::RenderContext;
 
-use super::world::World;
+use crate::render::world::world::WorldRenderer;
+
+use super::world::world::World;
 
 pub struct GameStatePlaying {
-    world: World
+    world: World,
+    world_renderer: WorldRenderer
 }
 
 impl GameStatePlaying {
     pub fn new() -> GameStatePlaying {
         GameStatePlaying {
-            world: World::new()
+            world: World::new(),
+            world_renderer: WorldRenderer::new()
         }
     }
 }
@@ -22,6 +26,6 @@ impl GameState for GameStatePlaying {
     }
 
     fn render(&mut self, render_context: &mut RenderContext) {
-        self.world.render(render_context);
+        self.world_renderer.render(render_context, &self.world);
     }
 }
