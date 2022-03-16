@@ -45,7 +45,7 @@ impl Chunk {
 
                 let sample = noise.sample(Vector2::new((worldx as f32) / (CHUNK_SIZE as f32), (worldz as f32) / (CHUNK_SIZE as f32)));
 
-                let height = (sample * 50.0 + 60.0).clamp(0.0, CHUNK_HEIGHT as f32) as u32;
+                let height = (sample * 100.0 + 60.0).clamp(0.0, CHUNK_HEIGHT as f32) as u32;
 
                 for y in 0..height {
                     blocks[x as usize][y as usize][z as usize] = Block::Grass;

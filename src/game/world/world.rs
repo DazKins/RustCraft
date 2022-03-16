@@ -4,7 +4,7 @@ use engine::{input::InputState, noise::Noise};
 
 use super::{chunk::{Chunk, ChunkCoordinate}, block::block::{BlockCoordinate, Block}};
 
-const WORLD_SIZE: i32 = 8;
+const WORLD_SIZE: i32 = 32;
 
 pub struct World {
     pub chunks: HashMap<ChunkCoordinate, RefCell<Chunk>>
@@ -12,7 +12,7 @@ pub struct World {
 
 impl World {
     pub fn new() -> Self {
-        let mut noise = Noise::new(8, 1.7, 0.125);
+        let mut noise = Noise::new(16, 1.8, 1.0 / 32.0);
 
         let mut chunks = HashMap::new();
 
