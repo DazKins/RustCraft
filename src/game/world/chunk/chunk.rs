@@ -30,15 +30,12 @@ impl ChunkBlockCoordinate {
 
 pub struct Chunk {
     pub position: ChunkCoordinate,
-    blocks: Vec<Vec<Vec<Block>>>,
+    blocks: Box<[[[Block; CHUNK_SIZE as usize]; CHUNK_HEIGHT as usize]; CHUNK_SIZE as usize]>,
 }
 
 impl Chunk {
     pub fn new(chunk_coordinate: ChunkCoordinate, noise: &mut Noise) -> Self {
-        let mut blocks = vec![
-            vec![vec![Block::Air; CHUNK_SIZE as usize]; CHUNK_HEIGHT as usize];
-            CHUNK_SIZE as usize
-        ];
+        let mut blocks = Box::new([[[Block::Air; CHUNK_SIZE as usize]; CHUNK_HEIGHT as usize]; CHUNK_SIZE as usize]);
 
         for x in 0..CHUNK_SIZE {
             for z in 0..CHUNK_SIZE {
@@ -60,7 +57,7 @@ impl Chunk {
 
         Chunk {
             position: chunk_coordinate,
-            blocks: blocks,
+            blocks,
         }
     }
 

@@ -9,7 +9,7 @@ use super::{
     chunk::{Chunk, ChunkCoordinate},
 };
 
-const WORLD_SIZE: i32 = 16;
+const WORLD_SIZE: i32 = 32;
 
 pub struct World {
     pub chunks: HashMap<ChunkCoordinate, RefCell<Chunk>>,
