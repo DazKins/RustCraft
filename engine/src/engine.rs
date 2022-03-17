@@ -86,7 +86,10 @@ impl Engine {
         self.window.tick();
 
         self.window.lock_mouse();
-        self.camera.tick(self.window.get_input_state());
+        
+        self.camera.set_position(game_state.get_camera_position());
+        self.camera.set_rotation(game_state.get_camera_rotation());
+
         game_state.tick(self.window.get_input_state());
     }
 
@@ -97,5 +100,9 @@ impl Engine {
             .transform(&self.camera.get_transform_matrix());
         game_state.render(&mut self.render_context);
         self.render_context.get_matrix_stack().pop();
+    }
+
+    pub fn get_camera(&mut self) -> &mut Camera {
+        return &mut self.camera
     }
 }

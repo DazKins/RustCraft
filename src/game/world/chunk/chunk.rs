@@ -64,8 +64,6 @@ impl Chunk {
         }
     }
 
-    pub fn tick(&mut self, input_state: &InputState) {}
-
     pub fn get_block(&self, chunk_block_coordinate: ChunkBlockCoordinate) -> Block {
         self.blocks[chunk_block_coordinate.x as usize][chunk_block_coordinate.y as usize]
             [chunk_block_coordinate.z as usize]

@@ -2,15 +2,18 @@ use std::{cell::RefCell, collections::HashMap};
 
 use engine::{input::InputState, noise::Noise};
 
+use crate::game::entity::player::Player;
+
 use super::{
     block::block::{Block, BlockCoordinate},
     chunk::{Chunk, ChunkCoordinate},
 };
 
-const WORLD_SIZE: i32 = 32;
+const WORLD_SIZE: i32 = 16;
 
 pub struct World {
     pub chunks: HashMap<ChunkCoordinate, RefCell<Chunk>>,
+    player: Player,
 }
 
 impl World {
@@ -27,13 +30,14 @@ impl World {
             }
         }
 
-        World { chunks }
+        World {
+            chunks,
+            player: Player::new(),
+        }
     }
 
     pub fn tick(&mut self, input_state: &InputState) {
-        for (_, chunk) in self.chunks.iter() {
-            chunk.borrow_mut().tick(input_state);
-        }
+        self.player.tick(input_state);
     }
 
     pub fn get_block(&self, block_coordinate: BlockCoordinate) -> Block {
@@ -46,5 +50,9 @@ impl World {
             }
             None => Block::Air,
         }
+    }
+
+    pub fn get_player(&self) -> &Player {
+        &self.player
     }
 }

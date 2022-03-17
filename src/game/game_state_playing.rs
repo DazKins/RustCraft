@@ -1,3 +1,4 @@
+use cgmath::Vector3;
 use engine::input::InputState;
 use engine::GameState;
 use engine::RenderContext;
@@ -27,5 +28,13 @@ impl GameState for GameStatePlaying {
 
     fn render(&mut self, render_context: &mut RenderContext) {
         self.world_renderer.render(render_context, &self.world);
+    }
+
+    fn get_camera_position(&self) -> Vector3<f32> {
+        self.world.get_player().get_position()
+    }
+
+    fn get_camera_rotation(&self) -> Vector3<f32> {
+        self.world.get_player().get_rotation()
     }
 }
