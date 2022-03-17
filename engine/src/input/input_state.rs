@@ -3,10 +3,10 @@ use cgmath::Vector2;
 use crate::input::Key;
 use std::collections::HashMap;
 
-pub struct InputState{
+pub struct InputState {
     keys_pressed: HashMap<Key, bool>,
     mouse_position: Vector2<f32>,
-    mouse_speed: Vector2<f32>
+    mouse_speed: Vector2<f32>,
 }
 
 impl InputState {
@@ -14,7 +14,7 @@ impl InputState {
         InputState {
             keys_pressed: HashMap::new(),
             mouse_position: Vector2::new(0.0, 0.0),
-            mouse_speed: Vector2::new(0.0, 0.0)
+            mouse_speed: Vector2::new(0.0, 0.0),
         }
     }
 

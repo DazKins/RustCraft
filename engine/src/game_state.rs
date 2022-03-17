@@ -1,4 +1,4 @@
-use crate::{RenderContext, input::InputState};
+use crate::{input::InputState, RenderContext};
 
 pub trait GameState {
     fn tick(&mut self, input_state: &InputState);

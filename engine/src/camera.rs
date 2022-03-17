@@ -1,4 +1,4 @@
-use cgmath::{Vector3, Matrix4, perspective, Deg, Rad};
+use cgmath::{perspective, Deg, Matrix4, Rad, Vector3};
 
 use crate::input::{InputState, Key};
 
@@ -8,20 +8,20 @@ pub struct Camera {
     fov: f32,
     aspect: f32,
     near: f32,
-    far: f32
+    far: f32,
 }
 
 const MOVE_SPEED: f32 = 0.1;
 
 impl Camera {
     pub fn new(fov: f32, aspect: f32, near: f32, far: f32) -> Self {
-        return Camera {
+        Camera {
             position: Vector3::new(0.0, 0.0, 0.0),
             rotation: Vector3::new(0.0, 0.0, 0.0),
             fov,
             aspect,
             near,
-            far
+            far,
         }
     }
 
@@ -58,12 +58,13 @@ impl Camera {
     }
 
     pub fn get_transform_matrix(&self) -> Matrix4<f32> {
-        let perspective: Matrix4<f32> = perspective( Deg(self.fov), self.aspect, self.near, self.far).into();
-        let position = Matrix4::from_translation(- self.position);
+        let perspective: Matrix4<f32> =
+            perspective(Deg(self.fov), self.aspect, self.near, self.far).into();
+        let position = Matrix4::from_translation(-self.position);
 
-        let rotation = Matrix4::from_angle_x(Rad(self.rotation.x)) *
-            Matrix4::from_angle_y(Rad(self.rotation.y)) *
-            Matrix4::from_angle_z(Rad(self.rotation.z));
+        let rotation = Matrix4::from_angle_x(Rad(self.rotation.x))
+            * Matrix4::from_angle_y(Rad(self.rotation.y))
+            * Matrix4::from_angle_z(Rad(self.rotation.z));
 
         return perspective * rotation * position;
     }

@@ -1,26 +1,25 @@
-use crate::{Window, Camera};
 use crate::GameState;
 use crate::RenderContext;
+use crate::{Camera, Window};
 use std::time::Instant;
 
 pub struct EngineConfig {
     pub window_width: u32,
-    pub window_height: u32
+    pub window_height: u32,
 }
 
 pub struct Engine {
     window: Window,
     render_context: RenderContext,
-    camera: Camera
+    camera: Camera,
 }
 
 impl Engine {
-    pub fn new(config: EngineConfig) -> Engine
-    {
+    pub fn new(config: EngineConfig) -> Engine {
         Engine {
             window: Window::new(config.window_width, config.window_height),
             render_context: RenderContext::new(),
-            camera: Camera::new(90.0, 1.0, 0.01, 1000.0)
+            camera: Camera::new(90.0, 1.0, 0.01, 1000.0),
         }
     }
 
@@ -60,7 +59,12 @@ impl Engine {
                 tick_tracker += 1;
             }
 
-            if now.checked_duration_since(last_debug_print_time).unwrap().as_secs() >= 1 {
+            if now
+                .checked_duration_since(last_debug_print_time)
+                .unwrap()
+                .as_secs()
+                >= 1
+            {
                 last_debug_print_time = now;
 
                 println!("FPS: {}", frame_tracker);
@@ -88,7 +92,9 @@ impl Engine {
 
     fn render(&mut self, game_state: &mut dyn GameState) {
         self.render_context.get_matrix_stack().push();
-        self.render_context.get_matrix_stack().transform(&self.camera.get_transform_matrix());
+        self.render_context
+            .get_matrix_stack()
+            .transform(&self.camera.get_transform_matrix());
         game_state.render(&mut self.render_context);
         self.render_context.get_matrix_stack().pop();
     }

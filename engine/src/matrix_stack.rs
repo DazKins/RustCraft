@@ -1,7 +1,7 @@
 use cgmath::Matrix4;
 
 pub struct MatrixStack {
-    stack: Vec<Matrix4<f32>>
+    stack: Vec<Matrix4<f32>>,
 }
 
 impl MatrixStack {
@@ -10,7 +10,7 @@ impl MatrixStack {
         identity_stack.push(Matrix4::from_scale(1.0_f32));
 
         MatrixStack {
-            stack: identity_stack
+            stack: identity_stack,
         }
     }
 

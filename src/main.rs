@@ -11,6 +11,5 @@ fn main() {
         window_height: 800,
     };
 
-    Engine::new(engine_config)
-        .start(&mut GameStatePlaying::new());
+    Engine::new(engine_config).start(&mut GameStatePlaying::new());
 }

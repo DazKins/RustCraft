@@ -4,14 +4,14 @@ use super::shader::Shader;
 
 pub struct RenderContext {
     matrix_stack: MatrixStack,
-    shader: Shader
+    shader: Shader,
 }
 
 impl RenderContext {
     pub fn new() -> RenderContext {
         RenderContext {
             matrix_stack: MatrixStack::new(),
-            shader: Shader::new("shaders/vertex_shader.vs", "shaders/fragment_shader.fs")
+            shader: Shader::new("shaders/vertex_shader.vs", "shaders/fragment_shader.fs"),
         }
     }
 

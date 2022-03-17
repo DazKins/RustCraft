@@ -17,7 +17,7 @@ const VERTEX_DATA_SIZE: u32 = VERTEX_POSITION_SIZE + VERTEX_TEXTURE_SIZE;
 pub struct Model {
     vao_id: GLuint,
     index_count: i32,
-    texture: Texture
+    texture: Texture,
 }
 
 impl Model {
@@ -32,26 +32,42 @@ impl Model {
             gl::BindVertexArray(vao_id);
 
             gl::BindBuffer(gl::ARRAY_BUFFER, vbo_id);
-            gl::BufferData(gl::ARRAY_BUFFER,
-                           (vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-                           &vertices[0] as *const f32 as *const c_void,
-                           gl::STATIC_DRAW);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                (vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
+                &vertices[0] as *const f32 as *const c_void,
+                gl::STATIC_DRAW,
+            );
 
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, ebo_id);
-            gl::BufferData(gl::ELEMENT_ARRAY_BUFFER,
-                           (indices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-                           &indices[0] as *const i32 as *const c_void,
-                           gl::STATIC_DRAW);
+            gl::BufferData(
+                gl::ELEMENT_ARRAY_BUFFER,
+                (indices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
+                &indices[0] as *const i32 as *const c_void,
+                gl::STATIC_DRAW,
+            );
 
             let mut offset: usize = 0;
 
-            gl::VertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, VERTEX_POSITION_SIZE as i32, gl::FLOAT, gl::FALSE, 
-                VERTEX_DATA_SIZE as i32 * mem::size_of::<GLfloat>() as GLsizei, (offset as usize * mem::size_of::<GLfloat>()) as *const c_void);
+            gl::VertexAttribPointer(
+                POSITION_ATTRIBUTE_LOCATION,
+                VERTEX_POSITION_SIZE as i32,
+                gl::FLOAT,
+                gl::FALSE,
+                VERTEX_DATA_SIZE as i32 * mem::size_of::<GLfloat>() as GLsizei,
+                (offset as usize * mem::size_of::<GLfloat>()) as *const c_void,
+            );
             gl::EnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
             offset += VERTEX_POSITION_SIZE as usize;
 
-            gl::VertexAttribPointer(TEXTURE_ATTRIBUTE_LOCATION, VERTEX_TEXTURE_SIZE as i32, gl::FLOAT, gl::FALSE, 
-                VERTEX_DATA_SIZE as i32 * mem::size_of::<GLfloat>() as GLsizei,  (offset as usize * mem::size_of::<GLfloat>()) as *const c_void);
+            gl::VertexAttribPointer(
+                TEXTURE_ATTRIBUTE_LOCATION,
+                VERTEX_TEXTURE_SIZE as i32,
+                gl::FLOAT,
+                gl::FALSE,
+                VERTEX_DATA_SIZE as i32 * mem::size_of::<GLfloat>() as GLsizei,
+                (offset as usize * mem::size_of::<GLfloat>()) as *const c_void,
+            );
             gl::EnableVertexAttribArray(TEXTURE_ATTRIBUTE_LOCATION);
 
             gl::BindBuffer(gl::ARRAY_BUFFER, 0);
@@ -64,7 +80,7 @@ impl Model {
         return Model {
             vao_id,
             index_count: indices.len() as i32,
-            texture
+            texture,
         };
     }
 
@@ -72,7 +88,12 @@ impl Model {
         self.texture.bind();
         unsafe {
             gl::BindVertexArray(self.vao_id);
-            gl::DrawElements(gl::TRIANGLES, self.index_count as i32, gl::UNSIGNED_INT, ptr::null());
+            gl::DrawElements(
+                gl::TRIANGLES,
+                self.index_count as i32,
+                gl::UNSIGNED_INT,
+                ptr::null(),
+            );
         }
     }
 }

@@ -1,5 +1,5 @@
-use engine::GameState;
 use engine::input::InputState;
+use engine::GameState;
 use engine::RenderContext;
 
 use crate::render::world::world::WorldRenderer;
@@ -8,14 +8,14 @@ use super::world::world::World;
 
 pub struct GameStatePlaying {
     world: World,
-    world_renderer: WorldRenderer
+    world_renderer: WorldRenderer,
 }
 
 impl GameStatePlaying {
     pub fn new() -> GameStatePlaying {
         GameStatePlaying {
             world: World::new(),
-            world_renderer: WorldRenderer::new()
+            world_renderer: WorldRenderer::new(),
         }
     }
 }

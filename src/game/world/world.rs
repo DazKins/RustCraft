@@ -1,13 +1,16 @@
-use std::{collections::HashMap, cell::RefCell};
+use std::{cell::RefCell, collections::HashMap};
 
 use engine::{input::InputState, noise::Noise};
 
-use super::{chunk::{Chunk, ChunkCoordinate}, block::block::{BlockCoordinate, Block}};
+use super::{
+    block::block::{Block, BlockCoordinate},
+    chunk::{Chunk, ChunkCoordinate},
+};
 
 const WORLD_SIZE: i32 = 32;
 
 pub struct World {
-    pub chunks: HashMap<ChunkCoordinate, RefCell<Chunk>>
+    pub chunks: HashMap<ChunkCoordinate, RefCell<Chunk>>,
 }
 
 impl World {
@@ -18,15 +21,13 @@ impl World {
 
         for x in 0..WORLD_SIZE {
             for z in 0..WORLD_SIZE {
-                let chunk_coordinate = ChunkCoordinate{ x, z };
+                let chunk_coordinate = ChunkCoordinate { x, z };
                 let chunk = Chunk::new(chunk_coordinate, &mut noise);
                 chunks.insert(chunk_coordinate, RefCell::new(chunk));
             }
         }
 
-        World {
-            chunks
-        }
+        World { chunks }
     }
 
     pub fn tick(&mut self, input_state: &InputState) {
@@ -42,8 +43,8 @@ impl World {
             Some(chunk) => {
                 let chunk_block_coordinate = block_coordinate.to_chunk_block_coordinate();
                 chunk.borrow().get_block(chunk_block_coordinate)
-            },
-            None => Block::Air
+            }
+            None => Block::Air,
         }
     }
 }

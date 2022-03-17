@@ -1,12 +1,12 @@
+use cgmath::{InnerSpace, Vector2};
 use std::collections::HashMap;
-use cgmath::{Vector2, InnerSpace};
 
 use rand::Rng;
 
 #[derive(Hash, PartialEq, Eq)]
 struct GridCoordinate {
     x: i32,
-    y: i32
+    y: i32,
 }
 
 fn weigh(x: f32) -> f32 {
@@ -21,16 +21,16 @@ pub struct Noise {
     octaves: u8,
     persistence: f32,
     base_frequency: f32,
-    perlin_noise: PerlinNoise
+    perlin_noise: PerlinNoise,
 }
 
 impl Noise {
-    pub fn new(octaves: u8, persistence: f32,frequency: f32) -> Self {
+    pub fn new(octaves: u8, persistence: f32, frequency: f32) -> Self {
         Noise {
             octaves,
             persistence,
             base_frequency: frequency,
-            perlin_noise: PerlinNoise::new()
+            perlin_noise: PerlinNoise::new(),
         }
     }
 
@@ -46,7 +46,7 @@ impl Noise {
 
             corrective_constant += amplitude;
 
-            frequency  *= 2.0;
+            frequency *= 2.0;
             amplitude /= self.persistence;
         }
 
@@ -55,13 +55,13 @@ impl Noise {
 }
 
 struct PerlinNoise {
-    grid_vectors: HashMap<GridCoordinate, Vector2<f32>>
+    grid_vectors: HashMap<GridCoordinate, Vector2<f32>>,
 }
 
 impl PerlinNoise {
     pub fn new() -> Self {
         PerlinNoise {
-            grid_vectors: HashMap::new()
+            grid_vectors: HashMap::new(),
         }
     }
 
@@ -70,7 +70,8 @@ impl PerlinNoise {
         match self.grid_vectors.get(&grid_coordinate) {
             Some(v) => v.to_owned(),
             None => {
-                let vec = Vector2::new(rng.gen_range(-1.0..1.0), rng.gen_range(-1.0..1.0)).normalize();
+                let vec =
+                    Vector2::new(rng.gen_range(-1.0..1.0), rng.gen_range(-1.0..1.0)).normalize();
                 self.grid_vectors.insert(grid_coordinate, vec);
                 vec
             }
@@ -83,10 +84,22 @@ impl PerlinNoise {
         let gv01 = Vector2::new(vec.x.floor(), (vec.y + 1.0).floor());
         let gv11 = Vector2::new((vec.x + 1.0).floor(), (vec.y + 1.0).floor());
 
-        let v00 = self.get_grid_vector(GridCoordinate { x: gv00.x as i32, y: gv00.y as i32 });
-        let v10 = self.get_grid_vector(GridCoordinate { x: gv10.x as i32, y: gv10.y as i32 });
-        let v01 = self.get_grid_vector(GridCoordinate { x: gv01.x as i32, y: gv01.y as i32 });
-        let v11 = self.get_grid_vector(GridCoordinate { x: gv11.x as i32, y: gv11.y as i32 });
+        let v00 = self.get_grid_vector(GridCoordinate {
+            x: gv00.x as i32,
+            y: gv00.y as i32,
+        });
+        let v10 = self.get_grid_vector(GridCoordinate {
+            x: gv10.x as i32,
+            y: gv10.y as i32,
+        });
+        let v01 = self.get_grid_vector(GridCoordinate {
+            x: gv01.x as i32,
+            y: gv01.y as i32,
+        });
+        let v11 = self.get_grid_vector(GridCoordinate {
+            x: gv11.x as i32,
+            y: gv11.y as i32,
+        });
 
         let dv00 = vec - gv00;
         let dv10 = vec - gv10;
@@ -104,7 +117,8 @@ impl PerlinNoise {
         let a = lerp(sy, w00, w01);
         let b = lerp(sy, w10, w11);
 
-        static CORRECTIVE_CONSTANT: f32 = 1.4142135623730950488016887242096980785696718753769480731766797381; // root(2)
+        static CORRECTIVE_CONSTANT: f32 =
+            1.4142135623730950488016887242096980785696718753769480731766797381; // root(2)
 
         let v = lerp(sx, a, b) * CORRECTIVE_CONSTANT;
 
