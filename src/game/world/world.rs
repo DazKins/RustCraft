@@ -6,38 +6,40 @@ use crate::game::entity::player::Player;
 
 use super::{
     block::block::{Block, BlockCoordinate},
-    chunk::{Chunk, ChunkCoordinate},
+    chunk::{Chunk, ChunkCoordinate, CHUNK_SIZE},
 };
 
-const WORLD_SIZE: i32 = 32;
+const CHUNK_LOAD_RADIUS: i32 = 16;
 
 pub struct World {
     pub chunks: HashMap<ChunkCoordinate, RefCell<Chunk>>,
     player: Player,
+    noise: Noise,
 }
 
 impl World {
     pub fn new() -> Self {
-        let mut noise = Noise::new(16, 1.8, 1.0 / 32.0);
-
-        let mut chunks = HashMap::new();
-
-        for x in 0..WORLD_SIZE {
-            for z in 0..WORLD_SIZE {
-                let chunk_coordinate = ChunkCoordinate { x, z };
-                let chunk = Chunk::new(chunk_coordinate, &mut noise);
-                chunks.insert(chunk_coordinate, RefCell::new(chunk));
-            }
-        }
-
         World {
-            chunks,
+            chunks: HashMap::new(),
             player: Player::new(),
+            noise: Noise::new(16, 1.8, 1.0 / 32.0),
         }
     }
 
     pub fn tick(&mut self, input_state: &InputState) {
         self.player.tick(input_state);
+
+        let x0 = (self.player.get_position().x / (CHUNK_SIZE as f32)) as i32;
+        let z0 = (self.player.get_position().z / (CHUNK_SIZE as f32)) as i32;
+
+        for x in (x0 - CHUNK_LOAD_RADIUS)..(x0 + CHUNK_LOAD_RADIUS) {
+            for z in (z0 - CHUNK_LOAD_RADIUS)..(z0 + CHUNK_LOAD_RADIUS) {
+                let chunk_coordinate = ChunkCoordinate{ x, z };
+                if !self.chunks.contains_key(&chunk_coordinate) {
+                    self.chunks.insert(chunk_coordinate, RefCell::new(Chunk::new(chunk_coordinate, &mut self.noise)));
+                }
+            }
+        }
     }
 
     pub fn get_block(&self, block_coordinate: BlockCoordinate) -> Block {
