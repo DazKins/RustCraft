@@ -1,13 +1,5 @@
 use cgmath::{InnerSpace, Vector2};
-use std::collections::HashMap;
-
-use rand::Rng;
-
-#[derive(Hash, PartialEq, Eq)]
-struct GridCoordinate {
-    x: i32,
-    y: i32,
-}
+use std::{collections::{hash_map::DefaultHasher}, hash::{Hash, Hasher}};
 
 fn weigh(x: f32) -> f32 {
     6.0 * x * x * x * x * x - 15.0 * x * x * x * x + 10.0 * x * x * x
@@ -54,28 +46,47 @@ impl Noise {
     }
 }
 
-struct PerlinNoise {
-    grid_vectors: HashMap<GridCoordinate, Vector2<f32>>,
+#[derive(Hash, PartialEq, Eq)]
+struct GridCoordinate {
+    seed: u64,
+    x: i32,
+    y: i32,
 }
+
+impl GridCoordinate {
+    pub fn new(x: i32, y: i32) -> Self {
+        GridCoordinate {
+            seed: 0,
+            x,
+            y
+        }
+    }
+}
+
+struct PerlinNoise {}
 
 impl PerlinNoise {
     pub fn new() -> Self {
-        PerlinNoise {
-            grid_vectors: HashMap::new(),
-        }
+        PerlinNoise {}
     }
 
-    fn get_grid_vector(&mut self, grid_coordinate: GridCoordinate) -> Vector2<f32> {
-        let mut rng = rand::thread_rng();
-        match self.grid_vectors.get(&grid_coordinate) {
-            Some(v) => v.to_owned(),
-            None => {
-                let vec =
-                    Vector2::new(rng.gen_range(-1.0..1.0), rng.gen_range(-1.0..1.0)).normalize();
-                self.grid_vectors.insert(grid_coordinate, vec);
-                vec
-            }
-        }
+    fn get_grid_vector(&mut self, mut grid_coordinate: GridCoordinate) -> Vector2<f32> {
+        grid_coordinate.seed = 1600624470247646139;
+
+        let mut hasher_x = DefaultHasher::new();
+        grid_coordinate.hash(&mut hasher_x);
+        let hash_x = hasher_x.finish();
+
+        grid_coordinate.seed = 15735240048817799231;
+
+        let mut hasher_y = DefaultHasher::new();
+        grid_coordinate.hash(&mut hasher_y);
+        let hash_y = hasher_y.finish();
+
+        let vx = (hash_x as f32) / (u64::MAX as f32);
+        let vy = (hash_y as f32) / (u64::MAX as f32);
+
+        Vector2::new (vx, vy).normalize()
     }
 
     pub fn sample(&mut self, vec: Vector2<f32>) -> f32 {
@@ -84,22 +95,22 @@ impl PerlinNoise {
         let gv01 = Vector2::new(vec.x.floor(), (vec.y + 1.0).floor());
         let gv11 = Vector2::new((vec.x + 1.0).floor(), (vec.y + 1.0).floor());
 
-        let v00 = self.get_grid_vector(GridCoordinate {
-            x: gv00.x as i32,
-            y: gv00.y as i32,
-        });
-        let v10 = self.get_grid_vector(GridCoordinate {
-            x: gv10.x as i32,
-            y: gv10.y as i32,
-        });
-        let v01 = self.get_grid_vector(GridCoordinate {
-            x: gv01.x as i32,
-            y: gv01.y as i32,
-        });
-        let v11 = self.get_grid_vector(GridCoordinate {
-            x: gv11.x as i32,
-            y: gv11.y as i32,
-        });
+        let v00 = self.get_grid_vector(GridCoordinate::new(
+            gv00.x as i32,
+            gv00.y as i32,
+        ));
+        let v10 = self.get_grid_vector(GridCoordinate::new(
+            gv10.x as i32,
+            gv10.y as i32,
+        ));
+        let v01 = self.get_grid_vector(GridCoordinate::new(
+            gv01.x as i32,
+            gv01.y as i32,
+        ));
+        let v11 = self.get_grid_vector(GridCoordinate::new(
+            gv11.x as i32,
+            gv11.y as i32,
+        ));
 
         let dv00 = vec - gv00;
         let dv10 = vec - gv10;
