@@ -7,8 +7,8 @@ use game::GameStatePlaying;
 
 fn main() {
     let engine_config = EngineConfig {
-        window_width: 800,
-        window_height: 800,
+        window_width: 1280,
+        window_height: 720,
     };
 
     Engine::new(engine_config).start(&mut GameStatePlaying::new());

@@ -19,7 +19,7 @@ impl Engine {
         Engine {
             window: Window::new(config.window_width, config.window_height),
             render_context: RenderContext::new(),
-            camera: Camera::new(90.0, 1.0, 0.01, 1000.0),
+            camera: Camera::new(90.0, config.window_width as f32 / config.window_height as f32, 0.01, 1000.0),
         }
     }
 
@@ -86,7 +86,7 @@ impl Engine {
         self.window.tick();
 
         self.window.lock_mouse();
-        
+
         self.camera.set_position(game_state.get_camera_position());
         self.camera.set_rotation(game_state.get_camera_rotation());
 
