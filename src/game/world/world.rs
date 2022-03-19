@@ -28,16 +28,9 @@ impl World {
 
         thread::spawn(move || {
             loop {
-                match chunk_coordinate_receiver.recv() {
-                    Ok(chunk_coordinate) => {
-                        let chunk = Chunk::new(chunk_coordinate, &noise);
-                        match chunk_sender.send(chunk) {
-                            Ok(_) => (),
-                            Err(_) => panic!("something's gone wrong..."),
-                        }
-                    },
-                    Err(_) => panic!("something's gone wrong..."),
-                }
+                let chunk_coordinate = chunk_coordinate_receiver.recv().unwrap();
+                let chunk = Chunk::new(chunk_coordinate, &noise);
+                chunk_sender.send(chunk).unwrap();
             }
         });
 
@@ -60,12 +53,8 @@ impl World {
             for z in (z0 - CHUNK_LOAD_RADIUS)..(z0 + CHUNK_LOAD_RADIUS) {
                 let chunk_coordinate = ChunkCoordinate{ x, z };
                 if !self.chunks.contains_key(&chunk_coordinate) && !self.chunk_generation_in_progress.contains(&chunk_coordinate) {
-                    match self.chunk_coordinate_sender.send(chunk_coordinate) {
-                        Ok(_) => {
-                            self.chunk_generation_in_progress.insert(chunk_coordinate);
-                        },
-                        Err(_) => panic!("something's gone wrong..."),
-                    }
+                    self.chunk_coordinate_sender.send(chunk_coordinate).unwrap();
+                    self.chunk_generation_in_progress.insert(chunk_coordinate);
                 }
             }
         }
