@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::HashMap};
+use std::{cell::RefCell, collections::{HashMap, HashSet}, sync::mpsc::{channel, Receiver, Sender, TryRecvError}, thread};
 
 use engine::{input::InputState, noise::Noise};
 
@@ -14,15 +14,39 @@ const CHUNK_LOAD_RADIUS: i32 = 16;
 pub struct World {
     pub chunks: HashMap<ChunkCoordinate, RefCell<Chunk>>,
     player: Player,
-    noise: Noise,
+    chunk_receiver: Receiver<Chunk>,
+    chunk_coordinate_sender: Sender<ChunkCoordinate>,
+    chunk_generation_in_progress: HashSet<ChunkCoordinate>,
 }
 
 impl World {
     pub fn new() -> Self {
+        let (chunk_sender, chunk_receiver) = channel::<Chunk>();
+        let (chunk_coordinate_sender, chunk_coordinate_receiver) = channel::<ChunkCoordinate>();
+
+        let noise = Noise::new(16, 1.8, 1.0 / 32.0);
+
+        thread::spawn(move || {
+            loop {
+                match chunk_coordinate_receiver.recv() {
+                    Ok(chunk_coordinate) => {
+                        let chunk = Chunk::new(chunk_coordinate, &noise);
+                        match chunk_sender.send(chunk) {
+                            Ok(_) => (),
+                            Err(_) => panic!("something's gone wrong..."),
+                        }
+                    },
+                    Err(_) => panic!("something's gone wrong..."),
+                }
+            }
+        });
+
         World {
             chunks: HashMap::new(),
             player: Player::new(),
-            noise: Noise::new(16, 1.8, 1.0 / 32.0),
+            chunk_receiver,
+            chunk_coordinate_sender,
+            chunk_generation_in_progress: HashSet::new(),
         }
     }
 
@@ -35,9 +59,27 @@ impl World {
         for x in (x0 - CHUNK_LOAD_RADIUS)..(x0 + CHUNK_LOAD_RADIUS) {
             for z in (z0 - CHUNK_LOAD_RADIUS)..(z0 + CHUNK_LOAD_RADIUS) {
                 let chunk_coordinate = ChunkCoordinate{ x, z };
-                if !self.chunks.contains_key(&chunk_coordinate) {
-                    self.chunks.insert(chunk_coordinate, RefCell::new(Chunk::new(chunk_coordinate, &mut self.noise)));
+                if !self.chunks.contains_key(&chunk_coordinate) && !self.chunk_generation_in_progress.contains(&chunk_coordinate) {
+                    match self.chunk_coordinate_sender.send(chunk_coordinate) {
+                        Ok(_) => {
+                            self.chunk_generation_in_progress.insert(chunk_coordinate);
+                        },
+                        Err(_) => panic!("something's gone wrong..."),
+                    }
                 }
+            }
+        }
+
+        loop {
+            match self.chunk_receiver.try_recv() {
+                Ok(chunk) => {
+                    self.chunk_generation_in_progress.remove(&chunk.position);
+                    self.chunks.insert(chunk.position, RefCell::new(chunk));
+                },
+                Err(err) => match err {
+                    TryRecvError::Empty => break,
+                    TryRecvError::Disconnected => panic!("something's gone wrong..."),
+                },
             }
         }
     }

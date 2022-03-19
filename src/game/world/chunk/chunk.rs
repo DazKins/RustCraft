@@ -1,12 +1,12 @@
 use cgmath::Vector2;
-use engine::{input::InputState, noise::Noise};
+use engine::noise::Noise;
 
 use crate::game::world::block::block::Block;
 
 pub const CHUNK_SIZE: u32 = 16;
 pub const CHUNK_HEIGHT: u32 = 128;
 
-#[derive(PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
 pub struct ChunkCoordinate {
     pub x: i32,
     pub z: i32,
@@ -34,7 +34,7 @@ pub struct Chunk {
 }
 
 impl Chunk {
-    pub fn new(chunk_coordinate: ChunkCoordinate, noise: &mut Noise) -> Self {
+    pub fn new(chunk_coordinate: ChunkCoordinate, noise: &Noise) -> Self {
         let mut blocks = Box::new([[[Block::Air; CHUNK_SIZE as usize]; CHUNK_HEIGHT as usize]; CHUNK_SIZE as usize]);
 
         for x in 0..CHUNK_SIZE {
